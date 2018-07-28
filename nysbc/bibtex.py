@@ -1,3 +1,4 @@
+# coding: latin-1
 # **************************************************************************
 # *
 # * Authors:     Grigory Sharov (gsharov@mrc-lmb.cam.ac.uk)
@@ -23,27 +24,19 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
+"""
 
-from bibtex import _bibtex # Load bibtex dict with references
-from convert import *
+@article{tan2017,
+  title={Addressing preferred specimen orientation in single-particle cryo-EM through tilting},
+  author={Tan, Y.Z. and Baldwin, P.R. and Davis, J.H. and Williamson, J.R. and Potter, C.S. and Carragher, B. and Lyumkis, D.},
+  journal={Nature methods},
+  volume={14},
+  number={8},
+  pages={793--796},
+  year={2017},
+  publisher={Nature Publishing Group},
+  doi = {http://dx.doi.org/10.1038/nmeth.4347}
+}
 
-_logo = "nysbc_logo.png"
-_references = ['tan2017']
 
-from protocol_3dfsc import Prot3DFSC
-from viewer import ThreedFscViewer
-
-
-_environ = getEnviron()
-
-
-def validateInstallation():
-    """ This function will be used to check if package is properly installed. """
-    missingPaths = ["%s: %s" % (var, _environ[var])
-                    for var in [NYSBC_3DFSC_HOME_VAR]
-                    if not os.path.exists(_environ[var])]
-
-    if missingPaths:
-        return ["Missing variables:"] + missingPaths
-    else:
-        return []  # No errors
+"""

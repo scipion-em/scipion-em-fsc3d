@@ -27,8 +27,8 @@
 
 from pyworkflow.utils import exists
 from pyworkflow.tests import BaseTest, DataSet, setupTestProject
-from pyworkflow.em.packages.nysbc import Prot3DFSC
 from pyworkflow.em.protocol import ProtImportVolumes, ProtImportMask
+from nysbc.protocols import Prot3DFSC
 
 
 class Test3DFSCBase(BaseTest):

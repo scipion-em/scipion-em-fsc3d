@@ -23,45 +23,6 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module contains converter functions that will serve to:
-1. Write from base classes to 3DFSC specific files
-2. Read from 3DFSC files to base classes
-"""
-
-import os
-from pyworkflow.utils import Environ
-from pyworkflow.utils.path import join
-
-NYSBC_3DFSC_HOME_VAR = 'NYSBC_3DFSC_HOME'
-
-
-def getEnviron():
-    """ Setup the environment variables needed to launch 3DFSC. """
-    environ = Environ(os.environ)
-    NYSBC_3DFSC_HOME = os.environ[('%s' % NYSBC_3DFSC_HOME_VAR)]
-
-    environ.update({
-        'PATH': join(NYSBC_3DFSC_HOME, 'ThreeDFSC'),
-    }, position=Environ.BEGIN)
-
-    if 'PYTHONPATH' in environ:
-        # this is required for python virtual env to work
-        environ.set('PYTHONPATH', '', position=Environ.BEGIN)
-    return environ
-
-
-_environ = getEnviron()
-
-SUPPORTED_VERSIONS = ['2.5']
-
-
-def getVersion():
-    path = os.environ[NYSBC_3DFSC_HOME_VAR]
-    for v in SUPPORTED_VERSIONS:
-        if v in path:
-            return v
-    return ''
 
 
 def findSphericity(fn):

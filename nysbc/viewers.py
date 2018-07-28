@@ -33,7 +33,8 @@ from pyworkflow.utils import exists
 from pyworkflow.viewer import ProtocolViewer, DESKTOP_TKINTER
 from pyworkflow.em.viewer import (ImageView, ChimeraView,
                                   ChimeraClientView, ObjectView)
-from protocol_3dfsc import Prot3DFSC
+
+from nysbc.protocols import Prot3DFSC
 
 VOL_ORIG = 0
 VOL_TH = 1

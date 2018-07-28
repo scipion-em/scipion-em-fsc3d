@@ -35,7 +35,8 @@ from pyworkflow.em.protocol import ProtAnalysis3D
 from pyworkflow.em.convert import ImageHandler
 from pyworkflow.em.data import Volume
 from pyworkflow.utils import join, basename, exists
-from convert import getEnviron, findSphericity
+import nysbc
+from nysbc.convert import findSphericity
 
 
 class Prot3DFSC(ProtAnalysis3D):
@@ -163,7 +164,7 @@ class Prot3DFSC(ProtAnalysis3D):
         """ Call ResMap.py with the appropriate parameters. """
         args = self._getArgs()
         param = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.iteritems()])
-        program = self._getProgram()
+        program = nysbc.Plugin.getProgram()
         self.info("**Running:** %s %s" % (program, param))
 
         f = open(self._getExtraPath('script.sh'), "w")
@@ -173,7 +174,7 @@ class Prot3DFSC(ProtAnalysis3D):
         f.close()
 
         self.runJob('%s ./script.sh' % shellName, '', cwd=self._getExtraPath(),
-                    env=getEnviron())
+                    env=nysbc.Plugin.getEnviron())
         if not exists(self._getFileName('out_vol3DFSC')):
             raise Exception('3D FSC run failed!')
 
@@ -240,11 +241,3 @@ class Prot3DFSC(ProtAnalysis3D):
             args.update({'--mask': basename(self._getFileName('input_maskFn'))})
 
         return args
-
-    def _getProgram(self):
-        """ Return the program binary that will be used. """
-        if 'NYSBC_3DFSC_HOME' not in os.environ:
-            return None
-        cmd = join(os.environ['NYSBC_3DFSC_HOME'], 'ThreeDFSC',
-                   'ThreeDFSC_Start.py')
-        return str(cmd)

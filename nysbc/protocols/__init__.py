@@ -1,4 +1,3 @@
-# coding: latin-1
 # **************************************************************************
 # *
 # * Authors:     Grigory Sharov (gsharov@mrc-lmb.cam.ac.uk)
@@ -24,29 +23,5 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-Bibtex string file for 3DFSC package.
-"""
 
-_bibtexStr = """
-
-@article{tan2017,
-  title={Addressing preferred specimen orientation in single-particle cryo-EM through tilting},
-  author={Tan, Y.Z. and Baldwin, P.R. and Davis, J.H. and Williamson, J.R. and Potter, C.S. and Carragher, B. and Lyumkis, D.},
-  journal={Nature methods},
-  volume={14},
-  number={8},
-  pages={793--796},
-  year={2017},
-  publisher={Nature Publishing Group},
-  doi = {http://dx.doi.org/10.1038/nmeth.4347}
-}
-
-
-"""
-
-
-
-from pyworkflow.utils import parseBibTex
-
-_bibtex = parseBibTex(_bibtexStr)  
+from protocol_3dfsc import Prot3DFSC
