@@ -31,25 +31,24 @@ from pyworkflow.utils import Environ, join
 _logo = "nysbc_logo.png"
 _references = ['tan2017']
 
-NYSBC_3DFSC_HOME_VAR = 'NYSBC_3DFSC_HOME'
+NYSBC_3DFSC_HOME = 'NYSBC_3DFSC_HOME'
 
 
-# The following class is required for Scipion to detect this Python module
-# as a Scipion Plugin. It needs to specify the PluginMeta __metaclass__
-# Some function related to the underlying package binaries need to be
-# implemented
-class Plugin:
-    #__metaclass__ = pyworkflow.em.PluginMeta
+class Plugin(pyworkflow.em.Plugin):
+    _homeVar = NYSBC_3DFSC_HOME
+    _pathVars = [NYSBC_3DFSC_HOME]
+    _supportedVersions = ['2.5']
+
+    @classmethod
+    def _defineVariables(cls):
+        cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc-3DFSC_2.5')
 
     @classmethod
     def getEnviron(cls):
         """ Setup the environment variables needed to launch 3DFSC. """
         environ = Environ(os.environ)
-        NYSBC_3DFSC_HOME = os.environ[('%s' % NYSBC_3DFSC_HOME_VAR)]
-
-        environ.update({
-            'PATH': join(NYSBC_3DFSC_HOME, 'ThreeDFSC'),
-        }, position=Environ.BEGIN)
+        environ.update({'PATH': cls.getHome('ThreeDFSC')},
+                       position=Environ.BEGIN)
 
         if 'PYTHONPATH' in environ:
             # this is required for python virtual env to work
@@ -57,35 +56,11 @@ class Plugin:
         return environ
 
     @classmethod
-    def getVersion(cls):
-        path = os.environ[NYSBC_3DFSC_HOME_VAR]
-        for v in cls.getSupportedVersions():
-            if v in path:
-                return v
-        return ''
-
-    @classmethod
-    def getSupportedVersions(cls):
-        """ Return the list of supported binary versions. """
-        return ['2.5']
-
-    @classmethod
-    def validateInstallation(cls):
-        """ This function will be used to check if package is properly installed. """
-        environ = cls.getEnviron()
-        missingPaths = ["%s: %s" % (var, environ[var])
-                        for var in [NYSBC_3DFSC_HOME_VAR]
-                        if not os.path.exists(environ[var])]
-
-        return (["Missing variables:"] + missingPaths) if missingPaths else []
-
-    @classmethod
     def getProgram(cls):
         """ Return the program binary that will be used. """
-        if NYSBC_3DFSC_HOME_VAR not in os.environ:
+        if NYSBC_3DFSC_HOME not in os.environ:
             return None
-        cmd = join(os.environ['NYSBC_3DFSC_HOME'], 'ThreeDFSC',
-                   'ThreeDFSC_Start.py')
+        cmd = cls.getHome('ThreeDFSC', 'ThreeDFSC_Start.py')
         return str(cmd)
 
 
