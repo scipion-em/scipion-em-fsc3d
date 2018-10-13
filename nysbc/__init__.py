@@ -37,11 +37,11 @@ NYSBC_3DFSC_HOME = 'NYSBC_3DFSC_HOME'
 class Plugin(pyworkflow.em.Plugin):
     _homeVar = NYSBC_3DFSC_HOME
     _pathVars = [NYSBC_3DFSC_HOME]
-    _supportedVersions = ['2.5']
+    _supportedVersions = ['2.5', '3.0']
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc-3DFSC_2.5')
+        cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc-3DFSC-2.5')
 
     @classmethod
     def getEnviron(cls):
@@ -50,9 +50,10 @@ class Plugin(pyworkflow.em.Plugin):
         environ.update({'PATH': cls.getHome('ThreeDFSC')},
                        position=Environ.BEGIN)
 
-        if 'PYTHONPATH' in environ:
-            # this is required for python virtual env to work
-            environ.set('PYTHONPATH', '', position=Environ.BEGIN)
+        # FIXME: program does not start due to virtualenv issues..
+        #if 'PYTHONPATH' in environ:
+        #    # this is required for python virtual env to work
+        #    environ.set('PYTHONPATH', '', position=Environ.BEGIN)
         return environ
 
     @classmethod
@@ -62,6 +63,22 @@ class Plugin(pyworkflow.em.Plugin):
             return None
         cmd = cls.getHome('ThreeDFSC', 'ThreeDFSC_Start.py')
         return str(cmd)
+
+    @classmethod
+    def defineBinaries(cls, env):
+        fsc_commands = [('conda env create -f environment.yml && touch IS_INSTALLED',
+                         'IS_INSTALLED')]
+
+        env.addPackage('nysbc-3DFSC', version='2.5',
+                       tar='nysbc-3DFSC_2.5.tgz',
+                       commands=fsc_commands,
+                       neededProgs=['conda'],
+                       default=True)
+
+        env.addPackage('nysbc-3DFSC', version='3.0',
+                       tar='nysbc-3DFSC_3.0.tgz',
+                       commands=fsc_commands,
+                       neededProgs=['conda'])
 
 
 pyworkflow.em.Domain.registerPlugin(__name__)
