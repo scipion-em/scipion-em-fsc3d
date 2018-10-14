@@ -46,14 +46,7 @@ VOLUME_CHIMERA = 1
 
 
 class ThreedFscViewer(ProtocolViewer):
-    """
-    Visualization tools for 3D FSC results.
-    
-    3D FSC is software tool for quantifying directional
-    resolution using 3D Fourier shell correlation volumes.
-
-    Find more information at https://github.com/nysbc/Anisotropy
-    """
+    """ Visualization of 3D FSC results. """
            
     _environments = [DESKTOP_TKINTER]
     _targets = [Prot3DFSC]

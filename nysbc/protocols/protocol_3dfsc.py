@@ -23,10 +23,6 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-Protocol wrapper around the 3D FSC tool for directional
-resolution estimation
-"""
 
 import os
 
@@ -36,11 +32,11 @@ from pyworkflow.em.convert import ImageHandler
 from pyworkflow.em.data import Volume
 from pyworkflow.utils import join, basename, exists
 import nysbc
-from nysbc.convert import findSphericity
 
 
 class Prot3DFSC(ProtAnalysis3D):
-    """
+    """ Protocol to calculate 3D FSC.
+
     3D FSC is software tool for quantifying directional
     resolution using 3D Fourier shell correlation volumes.
      
@@ -161,7 +157,6 @@ class Prot3DFSC(ProtAnalysis3D):
                        self._getFileName('input_maskFn'))
 
     def run3DFSCStep(self):
-        """ Call ResMap.py with the appropriate parameters. """
         args = self._getArgs()
         param = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.iteritems()])
         program = nysbc.Plugin.getProgram()
@@ -195,7 +190,7 @@ class Prot3DFSC(ProtAnalysis3D):
         summary = []
         if self.getOutputsSize() > 0:
             logFn = self.getLogPaths()[0]
-            sph = findSphericity(logFn)
+            sph = self.findSphericity(logFn)
             summary.append('Sphericity: %0.3f ' % sph)
         else:
             summary.append("Output is not ready yet.")
@@ -241,3 +236,13 @@ class Prot3DFSC(ProtAnalysis3D):
             args.update({'--mask': basename(self._getFileName('input_maskFn'))})
 
         return args
+
+    def findSphericity(self, fn):
+        f = open(fn, 'r')
+        sph = 0.
+        for line in f.readlines():
+            if 'Sphericity is ' in line:
+                sph = float(line.split()[2])
+        f.close()
+
+        return sph
