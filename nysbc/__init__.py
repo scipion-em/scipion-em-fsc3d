@@ -69,16 +69,20 @@ class Plugin(pyworkflow.em.Plugin):
         fsc_commands = [('conda env create -f environment.yml && touch IS_INSTALLED',
                          'IS_INSTALLED')]
 
+        envPath = os.environ.get('PATH', "")  # keep path since conda likely in there
+        installEnvVars = {'PATH': envPath} if envPath else None
         env.addPackage('nysbc-3DFSC', version='2.5',
                        tar='nysbc-3DFSC_2.5.tgz',
                        commands=fsc_commands,
                        neededProgs=['conda'],
-                       default=True)
+                       default=True,
+                       vars=installEnvVars)
 
         env.addPackage('nysbc-3DFSC', version='3.0',
                        tar='nysbc-3DFSC_3.0.tgz',
                        commands=fsc_commands,
-                       neededProgs=['conda'])
+                       neededProgs=['conda'],
+                       vars=installEnvVars)
 
 
 pyworkflow.em.Domain.registerPlugin(__name__)
