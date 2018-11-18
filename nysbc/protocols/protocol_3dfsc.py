@@ -81,6 +81,18 @@ class Prot3DFSC(ProtAnalysis3D):
     #--------------------------- DEFINE param functions ------------------------
 
     def _defineParams(self, form):
+        if self.isVersion3():
+            form.addHidden(params.USE_GPU, params.BooleanParam, default=False,
+                           label="Use GPU (vs CPU)",
+                           help="Set to true if you want the GPU implementation of "
+                                "3D FSC")
+            form.addHidden(params.GPU_LIST, params.StringParam, default='0',
+                           label="Choose GPU ID",
+                           help="GPU may have several cores. Set it to zero"
+                                " if you do not know what we are talking about."
+                                " First core index is 0, second 1 and so on.\n"
+                                "3DFSC can use only one GPU.")
+
         form.addSection(label='Input')
         form.addParam('inputVolume', params.PointerParam,
                       pointerClass='Volume',
@@ -159,6 +171,10 @@ class Prot3DFSC(ProtAnalysis3D):
     def run3DFSCStep(self):
         args = self._getArgs()
         param = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.iteritems()])
+
+        if self.isVersion3() and self.useGpu:
+            param += ' --gpu --gpu_id=%s' % self.gpuList.get()
+
         program = nysbc.Plugin.getProgram()
         self.info("**Running:** %s %s" % (program, param))
 
@@ -235,6 +251,9 @@ class Prot3DFSC(ProtAnalysis3D):
         if self.applyMask and self.maskVolume:
             args.update({'--mask': basename(self._getFileName('input_maskFn'))})
 
+        if self.isVersion3():
+            args.update({'--histogram': os.path.basename(self._getFileName('out_histogram'))})
+
         return args
 
     def findSphericity(self, fn):
@@ -246,3 +265,6 @@ class Prot3DFSC(ProtAnalysis3D):
         f.close()
 
         return sph
+
+    def isVersion3(self):
+        return nysbc.Plugin.getActiveVersion().startswith("3.")
