@@ -66,7 +66,7 @@ class Plugin(pyworkflow.em.Plugin):
 
     @classmethod
     def defineBinaries(cls, env):
-        fsc_commands = [('conda env create -f environment.yml && touch IS_INSTALLED',
+        fsc_commands = [('./install.sh',
                          'IS_INSTALLED')]
 
         envPath = os.environ.get('PATH', "")  # keep path since conda likely in there
