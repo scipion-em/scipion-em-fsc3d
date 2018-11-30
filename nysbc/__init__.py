@@ -50,10 +50,6 @@ class Plugin(pyworkflow.em.Plugin):
         environ.update({'PATH': cls.getHome('ThreeDFSC')},
                        position=Environ.BEGIN)
 
-        # FIXME: program does not start due to virtualenv issues..
-        #if 'PYTHONPATH' in environ:
-        #    # this is required for python virtual env to work
-        #    environ.set('PYTHONPATH', '', position=Environ.BEGIN)
         return environ
 
     @classmethod
