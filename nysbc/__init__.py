@@ -41,7 +41,7 @@ class Plugin(pyworkflow.em.Plugin):
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc-3DFSC-2.5')
+        cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc_3DFSC-2.5')
 
     @classmethod
     def getEnviron(cls):
@@ -71,15 +71,15 @@ class Plugin(pyworkflow.em.Plugin):
 
         envPath = os.environ.get('PATH', "")  # keep path since conda likely in there
         installEnvVars = {'PATH': envPath} if envPath else None
-        env.addPackage('nysbc-3DFSC', version='2.5',
-                       tar='nysbc-3DFSC_2.5.tgz',
+        env.addPackage('nysbc_3DFSC', version='2.5',
+                       tar='nysbc_3DFSC_2.5.tgz',
                        commands=fsc_commands,
                        neededProgs=['conda'],
                        default=True,
                        vars=installEnvVars)
 
-        env.addPackage('nysbc-3DFSC', version='3.0',
-                       tar='nysbc-3DFSC_3.0.tgz',
+        env.addPackage('nysbc_3DFSC', version='3.0',
+                       tar='nysbc_3DFSC_3.0.tgz',
                        commands=fsc_commands,
                        neededProgs=['conda'],
                        vars=installEnvVars)
