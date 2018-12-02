@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 from pyworkflow.protocol.params import LabelParam, EnumParam
 from pyworkflow.utils import exists
 from pyworkflow.viewer import ProtocolViewer, DESKTOP_TKINTER
-from pyworkflow.em.viewer import (ImageView, ChimeraView,
+from pyworkflow.em.viewers import (ImageView, ChimeraView,
                                   ChimeraClientView, ObjectView)
 
 from nysbc.protocols import Prot3DFSC
