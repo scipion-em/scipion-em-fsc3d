@@ -59,8 +59,6 @@ class Plugin(pyworkflow.em.Plugin):
     @classmethod
     def getProgram(cls):
         """ Return the program binary that will be used. """
-        if NYSBC_3DFSC_HOME not in os.environ:
-            return None
         cmd = cls.getHome('ThreeDFSC', 'ThreeDFSC_Start.py')
         return str(cmd)
 
