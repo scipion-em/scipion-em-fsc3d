@@ -28,7 +28,7 @@ import os
 import pyworkflow.em
 from pyworkflow.utils import Environ
 
-_logo = "nysbc_logo.png"
+_logo = "salk_logo.jpg"
 _references = ['tan2017']
 
 NYSBC_3DFSC_HOME = 'NYSBC_3DFSC_HOME'
@@ -55,8 +55,6 @@ class Plugin(pyworkflow.em.Plugin):
     @classmethod
     def getProgram(cls):
         """ Return the program binary that will be used. """
-        if NYSBC_3DFSC_HOME not in os.environ:
-            return None
         cmd = cls.getHome('ThreeDFSC', 'ThreeDFSC_Start.py')
         return str(cmd)
 
@@ -74,11 +72,11 @@ class Plugin(pyworkflow.em.Plugin):
                        default=True,
                        vars=installEnvVars)
 
-        # env.addPackage('nysbc3DFSC', version='3.0',
-        #                tar='nysbc3DFSC-3.0.tgz',
-        #                commands=fsc_commands,
-        #                neededProgs=['conda'],
-        #                vars=installEnvVars)
+        env.addPackage('nysbc3DFSC', version='3.0',
+                       tar='nysbc3DFSC-3.0.tgz',
+                       commands=fsc_commands,
+                       neededProgs=['conda'],
+                       vars=installEnvVars)
 
 
 pyworkflow.em.Domain.registerPlugin(__name__)
