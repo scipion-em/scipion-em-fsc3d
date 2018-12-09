@@ -28,7 +28,7 @@ import os
 import pyworkflow.em
 from pyworkflow.utils import Environ
 
-_logo = "nysbc_logo.png"
+_logo = "salk_logo.jpg"
 _references = ['tan2017']
 
 NYSBC_3DFSC_HOME = 'NYSBC_3DFSC_HOME'
@@ -50,10 +50,6 @@ class Plugin(pyworkflow.em.Plugin):
         environ.update({'PATH': cls.getHome('ThreeDFSC')},
                        position=Environ.BEGIN)
 
-        # FIXME: program does not start due to virtualenv issues..
-        #if 'PYTHONPATH' in environ:
-        #    # this is required for python virtual env to work
-        #    environ.set('PYTHONPATH', '', position=Environ.BEGIN)
         return environ
 
     @classmethod
@@ -76,11 +72,11 @@ class Plugin(pyworkflow.em.Plugin):
                        default=True,
                        vars=installEnvVars)
 
-        # env.addPackage('nysbc3DFSC', version='3.0',
-        #                tar='nysbc3DFSC-3.0.tgz',
-        #                commands=fsc_commands,
-        #                neededProgs=['conda'],
-        #                vars=installEnvVars)
+        env.addPackage('nysbc3DFSC', version='3.0',
+                       tar='nysbc3DFSC-3.0.tgz',
+                       commands=fsc_commands,
+                       neededProgs=['conda'],
+                       vars=installEnvVars)
 
 
 pyworkflow.em.Domain.registerPlugin(__name__)

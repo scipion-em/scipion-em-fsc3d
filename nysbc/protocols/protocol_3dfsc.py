@@ -180,7 +180,7 @@ class Prot3DFSC(ProtAnalysis3D):
 
         f = open(self._getExtraPath('script.sh'), "w")
         shellName = os.environ.get('SHELL')
-        line = 'source activate fsc\npython %s %s\nsource deactivate' % (program, param)
+        line = 'unset PYTHONPATH\nsource activate fsc\npython %s %s\nsource deactivate' % (program, param)
         f.write(line)
         f.close()
 
