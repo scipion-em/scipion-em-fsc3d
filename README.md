@@ -6,4 +6,4 @@ This plugin allows to use 3D FSC program within the Scipion framework.
 
 Supported versions of NYSBC: 2.5, 3.0
 
-![build status](http://heisenberg.cnb.csic.es:9980/badges/nysbc_devel.svg "Build status")
+![build status](http://arquimedes.cnb.csic.es:9980/badges/nysbc_devel.svg "Build status")
