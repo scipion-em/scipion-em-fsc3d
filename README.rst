@@ -13,7 +13,7 @@ This plugin provide a wrapper around `3DFSC <https://github.com/nysbc/Anisotropy
 Installation
 -------------
 
-You will need to use `2.0 <https://github.com/I2PC/scipion/releases/tag/v2.0>`_ version of Scipion to be able to run these protocols. To install the plugin, you have two options:
+You will need to use `2.0 <https://github.com/I2PC/scipion/releases/tag/V2.0.0>`_ version of Scipion to be able to run these protocols. To install the plugin, you have two options:
 
 a) Stable version
 
