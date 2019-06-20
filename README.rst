@@ -52,7 +52,8 @@ CONDA_ACTIVATION_CMD = eval "$(/extra/miniconda3/bin/conda shell.bash hook)"
 *NYSBC_3DFSC_HOME* (default = software/em/nysbc3DFSC-2.5):
 Path  where the 3DFSC is installed.
 
-*NYSBC_3DFSC_ACTIVATION_CMD*
+*NYSBC_3DFSC_ACTIVATION_CMD* (default = conda activate fsc):
+Command to  activate the 3DFSC environment.
 
 
 Verifying
