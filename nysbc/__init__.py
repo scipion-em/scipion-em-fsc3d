@@ -87,7 +87,7 @@ class Plugin(pyworkflow.em.Plugin):
         if not condaActivationCmd:
             neededProgs = ['conda']
 
-        fsc_commands = [(condaActivationCmd + './init.sh',
+        fsc_commands = [(condaActivationCmd + './install.sh',
                          'IS_INSTALLED')]
 
         envPath = os.environ.get('PATH', "")  # keep path since conda likely in there
