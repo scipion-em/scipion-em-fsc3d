@@ -26,12 +26,14 @@
 
 import os
 import pyworkflow.em
+from pyworkflow import Config
 from pyworkflow.utils import Environ
 
 _logo = "salk_logo.jpg"
 _references = ['tan2017']
 
 NYSBC_3DFSC_HOME = 'NYSBC_3DFSC_HOME'
+NYSBC_3DFSC_ACTIVATION_CMD = "NYSBC_3DFSC_ACTIVATION_CMD"
 
 
 class Plugin(pyworkflow.em.Plugin):
@@ -42,6 +44,7 @@ class Plugin(pyworkflow.em.Plugin):
     @classmethod
     def _defineVariables(cls):
         cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc3DFSC-2.5')
+        cls._defineVar(NYSBC_3DFSC_ACTIVATION_CMD, 'conda activate fsc')
 
     @classmethod
     def getEnviron(cls):
@@ -59,8 +62,32 @@ class Plugin(pyworkflow.em.Plugin):
         return str(cmd)
 
     @classmethod
+    def getCondaActivationCmd(cls):
+
+        condaActivationCmd = os.environ.get('CONDA_ACTIVATION_CMD', "")
+        if not condaActivationCmd:
+            print("WARNING!!: CONDA_ACTIVATION_CMD variable not defined. "
+                   "Relying on conda being in the PATH")
+        elif condaActivationCmd[-1] != ";":
+            condaActivationCmd += ";"
+        return condaActivationCmd
+
+    @classmethod
+    def getNYSBCACtivationCmd(cls):
+        cmd = cls.getVar(NYSBC_3DFSC_ACTIVATION_CMD) + ";"
+        # If variable comes from the config, scipion appends the scipion home, we should removr it
+        cmd = cmd.replace(Config.SCIPION_HOME+"/", "")
+        return cmd
+
+    @classmethod
     def defineBinaries(cls, env):
-        fsc_commands = [('./install.sh',
+        # try to get CONDA activation command
+        condaActivationCmd = cls.getCondaActivationCmd()
+        neededProgs = []
+        if not condaActivationCmd:
+            neededProgs = ['conda']
+
+        fsc_commands = [(condaActivationCmd + './install.sh',
                          'IS_INSTALLED')]
 
         envPath = os.environ.get('PATH', "")  # keep path since conda likely in there
@@ -68,14 +95,14 @@ class Plugin(pyworkflow.em.Plugin):
         env.addPackage('nysbc3DFSC', version='2.5',
                        tar='nysbc3DFSC-2.5.tgz',
                        commands=fsc_commands,
-                       neededProgs=['conda'],
+                       neededProgs=neededProgs,
                        default=True,
                        vars=installEnvVars)
 
         env.addPackage('nysbc3DFSC', version='3.0',
                        tar='nysbc3DFSC-3.0.tgz',
                        commands=fsc_commands,
-                       neededProgs=['conda'],
+                       neededProgs=neededProgs,
                        vars=installEnvVars)
 
 

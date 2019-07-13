@@ -177,14 +177,12 @@ class Prot3DFSC(ProtAnalysis3D):
 
         program = nysbc.Plugin.getProgram()
         self.info("**Running:** %s %s" % (program, param))
+        cmd = "unset PYTHONPATH;"
+        cmd += nysbc.Plugin.getCondaActivationCmd()
+        cmd += nysbc.Plugin.getNYSBCACtivationCmd()
+        cmd += 'python %s %s; conda deactivate' % (program, param)
 
-        f = open(self._getExtraPath('script.sh'), "w")
-        shellName = os.environ.get('SHELL')
-        line = 'unset PYTHONPATH\nsource activate fsc\npython %s %s\nsource deactivate' % (program, param)
-        f.write(line)
-        f.close()
-
-        self.runJob('%s ./script.sh' % shellName, '', cwd=self._getExtraPath(),
+        self.runJob(cmd, '', cwd=self._getExtraPath(),
                     env=nysbc.Plugin.getEnviron())
         if not exists(self._getFileName('out_vol3DFSC')):
             raise Exception('3D FSC run failed!')
