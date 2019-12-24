@@ -25,7 +25,7 @@
 # **************************************************************************
 
 import os
-import pyworkflow.em
+import pwem
 from pyworkflow import Config
 from pyworkflow.utils import Environ
 
@@ -36,15 +36,15 @@ NYSBC_3DFSC_HOME = 'NYSBC_3DFSC_HOME'
 NYSBC_3DFSC_ACTIVATION_CMD = "NYSBC_3DFSC_ACTIVATION_CMD"
 
 
-class Plugin(pyworkflow.em.Plugin):
+class Plugin(pwem.Plugin):
     _homeVar = NYSBC_3DFSC_HOME
     _pathVars = [NYSBC_3DFSC_HOME]
     _supportedVersions = ['2.5', '3.0']
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc3DFSC-2.5')
-        cls._defineVar(NYSBC_3DFSC_ACTIVATION_CMD, 'conda activate fsc')
+        cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc3DFSC-3.0')
+        cls._defineVar(NYSBC_3DFSC_ACTIVATION_CMD, 'conda activate 3DFSC')
 
     @classmethod
     def getEnviron(cls):
@@ -106,4 +106,4 @@ class Plugin(pyworkflow.em.Plugin):
                        vars=installEnvVars)
 
 
-pyworkflow.em.Domain.registerPlugin(__name__)
+pwem.Domain.registerPlugin(__name__)

@@ -27,10 +27,11 @@
 import os
 
 import pyworkflow.protocol.params as params
-from pyworkflow.em.protocol import ProtAnalysis3D
-from pyworkflow.em.convert import ImageHandler
-from pyworkflow.em.data import Volume
-from pyworkflow.utils import join, basename, exists
+from pwem.protocols import ProtAnalysis3D
+from pwem.convert import ImageHandler
+from pwem.objects import Volume
+from pyworkflow.utils import join, exists
+
 import nysbc
 
 
@@ -170,7 +171,7 @@ class Prot3DFSC(ProtAnalysis3D):
 
     def run3DFSCStep(self):
         args = self._getArgs()
-        param = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.iteritems()])
+        param = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.items()])
 
         if self.isVersion3() and self.useGpu:
             param += ' --gpu --gpu_id=%s' % self.gpuList.get()
