@@ -236,9 +236,9 @@ class Prot3DFSC(ProtAnalysis3D):
     def _getArgs(self):
         """ Prepare the args dictionary."""
 
-        args = {'--halfmap1': basename(self._getFileName('input_half1Fn')),
-                '--halfmap2': basename(self._getFileName('input_half2Fn')),
-                '--fullmap': basename(self._getFileName('input_volFn')),
+        args = {'--halfmap1': os.path.basename(self._getFileName('input_half1Fn')),
+                '--halfmap2': os.path.basename(self._getFileName('input_half2Fn')),
+                '--fullmap': os.path.basename(self._getFileName('input_volFn')),
                 '--apix': self.inputVolume.get().getSamplingRate(),
                 '--ThreeDFSC': '3D-FSC',
                 '--dthetaInDegrees': self.dTheta.get(),
@@ -248,7 +248,7 @@ class Prot3DFSC(ProtAnalysis3D):
                 '--numThresholdsForSphericityCalcs': self.numThr.get()
                 }
         if self.applyMask and self.maskVolume:
-            args.update({'--mask': basename(self._getFileName('input_maskFn'))})
+            args.update({'--mask': os.path.basename(self._getFileName('input_maskFn'))})
 
         if self.isVersion3():
             args.update({'--histogram': os.path.basename(self._getFileName('out_histogram'))})
