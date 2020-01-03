@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -25,14 +25,15 @@
 # **************************************************************************
 
 import os
+from io import open
 
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtAnalysis3D
 from pwem.convert import ImageHandler
 from pwem.objects import Volume
-from pyworkflow.utils import join, exists
+from pyworkflow.utils import exists
 
-import nysbc
+from .. import Plugin
 
 
 class Prot3DFSC(ProtAnalysis3D):
@@ -79,7 +80,7 @@ class Prot3DFSC(ProtAnalysis3D):
 
         self._updateFilenamesDict(myDict)
 
-    #--------------------------- DEFINE param functions ------------------------
+    # --------------------------- DEFINE param functions ----------------------
 
     def _defineParams(self, form):
         if self.isVersion3():
@@ -118,33 +119,33 @@ class Prot3DFSC(ProtAnalysis3D):
 
         form.addSection(label='Extra params')
         form.addParam('dTheta', params.FloatParam, default=20,
-                       label='Angle of cone (deg)',
-                       help='Angle of cone to be used for 3D FSC sampling in '
-                            'degrees. Default is 20 degrees.')
+                      label='Angle of cone (deg)',
+                      help='Angle of cone to be used for 3D FSC sampling in '
+                           'degrees. Default is 20 degrees.')
         form.addParam('fscCutoff', params.FloatParam, default=0.143,
-                       label='FSC cutoff',
-                       help='FSC cutoff criterion. 0.143 is default.')
+                      label='FSC cutoff',
+                      help='FSC cutoff criterion. 0.143 is default.')
         form.addParam('thrSph', params.FloatParam, default=0.5,
-                       label='Sphericity threshold',
-                       help='Threshold value for 3DFSC volume for calculating '
-                            'sphericity. 0.5 is default.')
+                      label='Sphericity threshold',
+                      help='Threshold value for 3DFSC volume for calculating '
+                           'sphericity. 0.5 is default.')
         form.addParam('hpFilter', params.FloatParam, default=200,
-                       label='High-pass filter (A)',
-                       help='High-pass filter for thresholding in Angstrom. '
-                            'Prevents small dips in directional FSCs at low '
-                            'spatial frequency due to noise from messing up '
-                            'the thresholding step. Decrease if you see a '
-                            'huge wedge missing from your thresholded 3DFSC '
-                            'volume. 200 Angstroms is default.')
+                      label='High-pass filter (A)',
+                      help='High-pass filter for thresholding in Angstrom. '
+                           'Prevents small dips in directional FSCs at low '
+                           'spatial frequency due to noise from messing up '
+                           'the thresholding step. Decrease if you see a '
+                           'huge wedge missing from your thresholded 3DFSC '
+                           'volume. 200 Angstroms is default.')
         form.addParam('numThr', params.IntParam, default=1,
-                       label='Number of threshold for sphericity',
-                       help='Calculate sphericities at different threshold '
-                            'cutoffs to determine sphericity deviation across '
-                            'spatial frequencies. This can be useful to '
-                            'evaluate possible effects of overfitting or '
-                            'improperly assigned orientations.')
+                      label='Number of threshold for sphericity',
+                      help='Calculate sphericities at different threshold '
+                           'cutoffs to determine sphericity deviation across '
+                           'spatial frequencies. This can be useful to '
+                           'evaluate possible effects of overfitting or '
+                           'improperly assigned orientations.')
 
-    #--------------------------- INSERT steps functions ------------------------
+    # --------------------------- INSERT steps functions ----------------------
     
     def _insertAllSteps(self):
         # Insert processing steps
@@ -153,7 +154,7 @@ class Prot3DFSC(ProtAnalysis3D):
         self._insertFunctionStep('run3DFSCStep')
         self._insertFunctionStep('createOutputStep')
 
-    #--------------------------- STEPS functions -------------------------------
+    # --------------------------- STEPS functions -----------------------------
     
     def convertInputStep(self):
         """ Convert input volumes to .mrc as expected by 3DFSC."""
@@ -176,15 +177,15 @@ class Prot3DFSC(ProtAnalysis3D):
         if self.isVersion3() and self.useGpu:
             param += ' --gpu --gpu_id=%s' % self.gpuList.get()
 
-        program = nysbc.Plugin.getProgram()
+        program = Plugin.getProgram()
         self.info("**Running:** %s %s" % (program, param))
         cmd = "unset PYTHONPATH;"
-        cmd += nysbc.Plugin.getCondaActivationCmd()
-        cmd += nysbc.Plugin.getNYSBCACtivationCmd()
+        cmd += Plugin.getCondaActivationCmd()
+        cmd += Plugin.getNYSBCACtivationCmd()
         cmd += 'python %s %s; conda deactivate' % (program, param)
 
         self.runJob(cmd, '', cwd=self._getExtraPath(),
-                    env=nysbc.Plugin.getEnviron())
+                    env=Plugin.getEnviron())
         if not exists(self._getFileName('out_vol3DFSC')):
             raise Exception('3D FSC run failed!')
 
@@ -199,7 +200,7 @@ class Prot3DFSC(ProtAnalysis3D):
             self._defineOutputs(outputVolume=vol)
             self._defineSourceRelation(self.inputVolume, vol)
 
-    #--------------------------- INFO functions --------------------------------
+    # --------------------------- INFO functions ------------------------------
     
     def _summary(self):
         summary = []
@@ -231,7 +232,7 @@ class Prot3DFSC(ProtAnalysis3D):
                 
         return errors
     
-    #--------------------------- UTILS functions -------------------------------
+    # --------------------------- UTILS functions -----------------------------
  
     def _getArgs(self):
         """ Prepare the args dictionary."""
@@ -266,4 +267,4 @@ class Prot3DFSC(ProtAnalysis3D):
         return sph
 
     def isVersion3(self):
-        return nysbc.Plugin.getActiveVersion().startswith("3.")
+        return Plugin.getActiveVersion().startswith("3.")

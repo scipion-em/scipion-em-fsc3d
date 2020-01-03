@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -25,14 +25,15 @@
 # **************************************************************************
 
 import os
+from io import open
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 
 from pyworkflow.protocol.params import LabelParam, EnumParam
 from pyworkflow.utils import exists
-from pyworkflow.viewer import ProtocolViewer, DESKTOP_TKINTER
-from pwem.viewers import (ImageView, ChimeraView,
-                          ChimeraClientView, ObjectView)
+from pyworkflow.viewer import DESKTOP_TKINTER
+from pwem.viewers import (ChimeraView, ChimeraClientView,
+                          ObjectView, EmProtocolViewer)
 
 from .protocols import Prot3DFSC
 
@@ -45,7 +46,7 @@ VOLUME_SLICES = 0
 VOLUME_CHIMERA = 1
 
 
-class ThreedFscViewer(ProtocolViewer):
+class ThreedFscViewer(EmProtocolViewer):
     """ Visualization of 3D FSC results. """
            
     _environments = [DESKTOP_TKINTER]
@@ -53,7 +54,7 @@ class ThreedFscViewer(ProtocolViewer):
     _label = 'viewer 3D FSC'
 
     def __init__(self, **kwargs):
-        ProtocolViewer.__init__(self, **kwargs)
+        EmProtocolViewer.__init__(self, **kwargs)
 
     def _defineParams(self, form):
         form.addSection(label='Visualization')
