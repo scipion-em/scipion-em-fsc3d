@@ -199,4 +199,7 @@ setup(
         'Bug Reports': 'https://github.com/scipion-em/scipion-em-nysbc/issues',
         'Source': 'https://github.com/scipion-em/scipion-em-nysbc/',
     },
+    entry_points={
+        'pyworkflow.plugin': 'nysbc = nysbc'
+    }
 )

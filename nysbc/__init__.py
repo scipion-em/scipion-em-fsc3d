@@ -104,6 +104,3 @@ class Plugin(pwem.Plugin):
                        commands=fsc_commands,
                        neededProgs=neededProgs,
                        vars=installEnvVars)
-
-
-pwem.Domain.registerPlugin(__name__)
