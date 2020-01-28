@@ -29,7 +29,7 @@ from io import open
 
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtAnalysis3D
-from pwem.convert import ImageHandler
+from pwem.emlib.image import ImageHandler
 from pwem.objects import Volume
 from pyworkflow.utils import exists
 
