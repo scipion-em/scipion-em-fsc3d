@@ -1,3 +1,0 @@
-mrcfile
-click
-numba==0.46.0
