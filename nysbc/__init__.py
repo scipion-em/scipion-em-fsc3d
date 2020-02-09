@@ -96,11 +96,11 @@ class Plugin(pwem.Plugin):
                        tar='nysbc3DFSC-2.5.tgz',
                        commands=fsc_commands,
                        neededProgs=neededProgs,
-                       default=True,
                        vars=installEnvVars)
 
         env.addPackage('nysbc3DFSC', version='3.0',
                        tar='nysbc3DFSC-3.0.tgz',
                        commands=fsc_commands,
                        neededProgs=neededProgs,
+                       default=True,
                        vars=installEnvVars)
