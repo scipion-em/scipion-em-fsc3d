@@ -62,7 +62,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name='scipion-em-nysbc',  # Required
+    name='scipion-em-fsc3d',  # Required
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
@@ -75,7 +75,7 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description='Plugin to use NYSBC programs within the Scipion framework',  # Required
+    description='Plugin to use 3DFSC within the Scipion framework',  # Required
 
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
@@ -91,7 +91,7 @@ setup(
     #
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url='https://github.com/scipion-em/scipion-em-nysbc',  # Optional
+    url='https://github.com/scipion-em/scipion-em-fsc3d',  # Optional
 
     # This should be your name or the name of the organization which owns the
     # project.
@@ -168,7 +168,7 @@ setup(
     # MANIFEST.in as well.
     # include_package_data=True,
     package_data={  # Optional
-       'nysbc': ['salk_logo.jpg', 'protocols.conf'],
+       'fsc3d': ['salk_logo.jpg', 'protocols.conf'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
@@ -201,11 +201,11 @@ setup(
     # maintainers, and where to support the project financially. The key is
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
-        'Bug Reports': 'https://github.com/scipion-em/scipion-em-nysbc/issues',
-        'Source': 'https://github.com/scipion-em/scipion-em-nysbc/',
+        'Bug Reports': 'https://github.com/scipion-em/scipion-em-fsc3d/issues',
+        'Source': 'https://github.com/scipion-em/scipion-em-fsc3d/',
     },
     install_requires=[requirements],
     entry_points={
-        'pyworkflow.plugin': 'nysbc = nysbc'
+        'pyworkflow.plugin': 'fsc3d = fsc3d'
     }
 )

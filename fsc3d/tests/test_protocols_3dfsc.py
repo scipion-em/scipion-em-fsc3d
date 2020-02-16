@@ -59,7 +59,7 @@ class Test3DFSCBase(BaseTest):
         return cls.protImport
 
 
-class TestNysbc3DFSC(Test3DFSCBase):
+class Test3DFSC(Test3DFSCBase):
     @classmethod
     def setUpClass(cls):
         setupTestProject(cls)

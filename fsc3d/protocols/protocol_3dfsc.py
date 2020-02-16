@@ -44,7 +44,7 @@ class Prot3DFSC(ProtAnalysis3D):
      
     Find more information at https://github.com/nysbc/Anisotropy
     """
-    _label = '3D FSC'
+    _label = 'estimate resolution'
 
     INPUT_HELP = """ Required input volumes for 3D FSC:
         1. First half map of 3D reconstruction. Can be masked or unmasked.
@@ -83,17 +83,12 @@ class Prot3DFSC(ProtAnalysis3D):
     # --------------------------- DEFINE param functions ----------------------
 
     def _defineParams(self, form):
-        if self.isVersion3():
-            form.addHidden(params.USE_GPU, params.BooleanParam, default=False,
-                           label="Use GPU (vs CPU)",
-                           help="Set to true if you want the GPU implementation of "
-                                "3D FSC")
-            form.addHidden(params.GPU_LIST, params.StringParam, default='0',
-                           label="Choose GPU ID",
-                           help="GPU may have several cores. Set it to zero"
-                                " if you do not know what we are talking about."
-                                " First core index is 0, second 1 and so on.\n"
-                                "3DFSC can use only one GPU.")
+        form.addHidden(params.USE_GPU, params.BooleanParam, default=False,
+                       label="Use GPU?")
+        form.addHidden(params.GPU_LIST, params.StringParam, default='0',
+                       label="Choose GPU ID",
+                       help="Each GPU has a unique ID. If you have only "
+                            "one GPU, set ID to 0. 3DFSC can use only one GPU.")
 
         form.addSection(label='Input')
         form.addParam('inputVolume', params.PointerParam,
@@ -172,20 +167,12 @@ class Prot3DFSC(ProtAnalysis3D):
 
     def run3DFSCStep(self):
         args = self._getArgs()
-        param = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.items()])
+        params = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.items()])
 
-        if self.isVersion3() and self.useGpu:
-            param += ' --gpu --gpu_id=%s' % self.gpuList.get()
+        if self.useGpu:
+            params += ' --gpu --gpu_id=%s' % self.gpuList.get()
 
-        program = Plugin.getProgram()
-        self.info("**Running:** %s %s" % (program, param))
-        cmd = "unset PYTHONPATH;"
-        cmd += Plugin.getCondaActivationCmd()
-        cmd += Plugin.getNYSBCACtivationCmd()
-        cmd += 'python %s %s; conda deactivate' % (program, param)
-
-        self.runJob(cmd, '', cwd=self._getExtraPath(),
-                    env=Plugin.getEnviron())
+        Plugin.runProgram(self, params, cwd=self._getExtraPath())
         if not exists(self._getFileName('out_vol3DFSC')):
             raise Exception('3D FSC run failed!')
 
@@ -251,8 +238,7 @@ class Prot3DFSC(ProtAnalysis3D):
         if self.applyMask and self.maskVolume:
             args.update({'--mask': os.path.basename(self._getFileName('input_maskFn'))})
 
-        if self.isVersion3():
-            args.update({'--histogram': os.path.basename(self._getFileName('out_histogram'))})
+        args.update({'--histogram': os.path.basename(self._getFileName('out_histogram'))})
 
         return args
 
@@ -265,6 +251,3 @@ class Prot3DFSC(ProtAnalysis3D):
         f.close()
 
         return sph
-
-    def isVersion3(self):
-        return Plugin.getActiveVersion().startswith("3.")

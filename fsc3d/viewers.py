@@ -36,14 +36,7 @@ from pwem.viewers import (ChimeraView, ChimeraClientView,
                           ObjectView, EmProtocolViewer)
 
 from .protocols import Prot3DFSC
-
-VOL_ORIG = 0
-VOL_TH = 1
-VOL_THBIN = 2
-VOL_ALL = 3
-
-VOLUME_SLICES = 0
-VOLUME_CHIMERA = 1
+from .constants import *
 
 
 class ThreedFscViewer(EmProtocolViewer):
@@ -51,7 +44,7 @@ class ThreedFscViewer(EmProtocolViewer):
            
     _environments = [DESKTOP_TKINTER]
     _targets = [Prot3DFSC]
-    _label = 'viewer 3D FSC'
+    _label = 'viewer'
 
     def __init__(self, **kwargs):
         EmProtocolViewer.__init__(self, **kwargs)
