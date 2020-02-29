@@ -212,10 +212,9 @@ class Prot3DFSC(ProtAnalysis3D):
         if half1.getXDim() != half2.getXDim():
             errors.append('The selected half volumes have not the same '
                           'dimensions.')
-        if self.applyMask and mask:
-            if mask.getXDim() != self.inputVolume.get().getXDim():
-                errors.append('Input volume and the mask have different '
-                              'dimensions.')
+        if self.applyMask and (mask.getXDim() != self.inputVolume.get().getXDim()):
+            errors.append('Input volume and the mask have different '
+                          'dimensions.')
                 
         return errors
     
