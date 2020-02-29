@@ -42,10 +42,6 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-# Load requirements.txt
-with open('requirements.txt') as f:
-    requirements = f.read().splitlines()
-
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
@@ -204,7 +200,6 @@ setup(
         'Bug Reports': 'https://github.com/scipion-em/scipion-em-fsc3d/issues',
         'Source': 'https://github.com/scipion-em/scipion-em-fsc3d/',
     },
-    install_requires=[requirements],
     entry_points={
         'pyworkflow.plugin': 'fsc3d = fsc3d'
     }
