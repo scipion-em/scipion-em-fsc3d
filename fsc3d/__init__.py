@@ -67,21 +67,6 @@ class Plugin(pwem.Plugin):
         return activation.replace(scipionHome, "", 1)
 
     @classmethod
-    def getCondaActivationCmd(cls):
-        if cls._condaActivationCmd is None:
-            condaActivationCmd = os.environ.get(CONDA_ACTIVATION_CMD, "")
-            correctCondaActivationCmd = condaActivationCmd.replace(Config.SCIPION_HOME + "/", "")
-            if not correctCondaActivationCmd:
-                print("WARNING!!: %s variable not defined. "
-                      "Relying on conda being in the PATH" % CONDA_ACTIVATION_CMD)
-            elif correctCondaActivationCmd[-1] not in [";", "&"]:
-                correctCondaActivationCmd += "&&"
-
-            cls._condaActivationCmd = correctCondaActivationCmd
-
-        return cls._condaActivationCmd
-
-    @classmethod
     def runProgram(cls, protocol, args, cwd=None):
         """ Return the program binary that will be used. """
         cmd = '%s %s && ' % (cls.getCondaActivationCmd(),
