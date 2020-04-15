@@ -2,12 +2,16 @@
 FSC3D plugin
 ============
 
+**ATTENTION: This plugin has been renamed from NYSBC to FSC3D.**
 
 This plugin provide a wrapper around `3DFSC <https://github.com/nysbc/Anisotropy/>`_ program developed at Salk Institute and NYSBC.
 
-.. figure:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_devel.svg
-   :align: left
-   :alt: build status
++------------------+------------------+
+| stable: |stable| | devel: | |devel| |
++------------------+------------------+
+
+.. |stable| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_prod.svg
+.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_sdevel.svg
 
 
 Installation
@@ -35,11 +39,9 @@ b) Developer's version
 
        scipion installp -p path_to_scipion-em-fsc3d --devel
 
-FSC3D binaries will be installed automatically with the plugin at
-**software/em/fsc3D-3.0**, but you can also link an existing installation.
+FSC3D binaries will be installed automatically with the plugin at **software/em/fsc3D-3.0**, but you can also link an existing installation.
 
-**Important:** you need to have conda (miniconda3 or anaconda3)
-pre-installed to use this program.
+**Important:** you need to have conda (miniconda3 or anaconda3) pre-installed to use this program.
 
 Configuration variables
 -----------------------
@@ -50,21 +52,21 @@ depending on your conda version and shell you will need something different:
 CONDA_ACTIVATION_CMD = eval "$(/extra/miniconda3/bin/conda shell.bash hook)"
 
 *FSC3D_HOME* (default = software/em/fsc3D-3.0):
-Path  where the 3DFSC is installed.
+Path where the 3DFSC is installed.
 
 *FSC3D_ACTIVATION_CMD* (default = conda activate 3DFSC):
-Command to  activate the 3DFSC environment.
+Command to activate the 3DFSC environment.
 
 
 Verifying
 ---------
 To check the installation, simply run the following Scipion test:
+
 ``scipion test fsc3d.tests.test_protocols_3dfsc.Test3DFSC``
-
-
 
 Supported versions
 ------------------
+
 3.0
 
 Protocols
