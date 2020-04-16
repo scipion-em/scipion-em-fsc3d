@@ -1,3 +1,5 @@
+1.0.4:
+    - updated release for scipion 3
 1.0.3:
     - migrated to python 3
     - plugin renamed to fsc3d, 2.5 version removed
