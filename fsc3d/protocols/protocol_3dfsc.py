@@ -237,7 +237,7 @@ class Prot3DFSC(ProtAnalysis3D):
         if self.applyMask and self.maskVolume:
             args.update({'--mask': os.path.basename(self._getFileName('input_maskFn'))})
 
-        args.update({'--histogram': os.path.basename(self._getFileName('out_histogram'))})
+        args.update({'--histogram': os.path.basename(self._getFileName('out_histogram').replace('.png', ''))})
 
         return args
 
