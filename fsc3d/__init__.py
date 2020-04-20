@@ -91,7 +91,7 @@ class Plugin(pwem.Plugin):
         installEnvVars = {'PATH': envPath} if envPath else None
 
         env.addPackage('fsc3D', version='3.0',
-                       tar='fsc3D-3.0.tgz',
+                       url='https://github.com/azazellochg/fsc3D/archive/3.0.tar.gz',
                        commands=fsc_commands,
                        neededProgs=neededProgs,
                        default=True,
