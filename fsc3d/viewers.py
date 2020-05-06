@@ -25,7 +25,6 @@
 # **************************************************************************
 
 import os
-from io import open
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 
@@ -98,16 +97,15 @@ class ThreedFscViewer(EmProtocolViewer):
 
         if len(volumes) > 1:
             cmdFile = self.protocol._getExtraPath('chimera_volumes.cmd')
-            f = open(cmdFile, 'w+')
-            for volFn in volumes:
-                # We assume that the chimera script will be generated
-                # at the same folder as 3DFSC volumes
-                vol = volFn.replace(':mrc', '')
-                localVol = os.path.basename(vol)
-                if exists(vol):
-                    f.write("open %s\n" % localVol)
-            f.write('tile\n')
-            f.close()
+            with open(cmdFile, 'w+') as f:
+                for volFn in volumes:
+                    # We assume that the chimera script will be generated
+                    # at the same folder as 3DFSC volumes
+                    vol = volFn.replace(':mrc', '')
+                    localVol = os.path.basename(vol)
+                    if exists(vol):
+                        f.write("open %s\n" % localVol)
+                f.write('tile\n')
             view = ChimeraView(cmdFile)
         else:
             view = ChimeraClientView(volumes[0])

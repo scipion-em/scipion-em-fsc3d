@@ -25,7 +25,6 @@
 # **************************************************************************
 
 import os
-from io import open
 
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtAnalysis3D
@@ -161,7 +160,7 @@ class Prot3DFSC(ProtAnalysis3D):
                    self._getFileName('input_half2Fn'))
         ih.convert(self.inputVolume.get().getLocation(),
                    self._getFileName('input_volFn'))
-        if self.maskVolume.get() is not None:
+        if self.maskVolume.hasValue():
             ih.convert(self.maskVolume.get().getLocation(),
                        self._getFileName('input_maskFn'))
 
@@ -242,11 +241,10 @@ class Prot3DFSC(ProtAnalysis3D):
         return args
 
     def findSphericity(self, fn):
-        f = open(fn, 'r')
-        sph = 0.
-        for line in f.readlines():
-            if 'Sphericity is ' in line:
-                sph = float(line.split()[2])
-        f.close()
+        with open(fn, 'r') as f:
+            sph = 0.
+            for line in f:
+                if 'Sphericity is ' in line:
+                    sph = float(line.split()[2])
 
         return sph
