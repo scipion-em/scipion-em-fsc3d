@@ -1,3 +1,7 @@
+1.0.5:
+    - switch to a fork of Anisotropy software
+    - fix output histogram
+    - use "with open"
 1.0.4:
     - updated release for scipion 3
 1.0.3:
