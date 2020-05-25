@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -30,30 +30,23 @@ import matplotlib.pyplot as plt
 
 from pyworkflow.protocol.params import LabelParam, EnumParam
 from pyworkflow.utils import exists
-from pyworkflow.viewer import ProtocolViewer, DESKTOP_TKINTER
-from pyworkflow.em.viewers import (ImageView, ChimeraView,
-                                  ChimeraClientView, ObjectView)
+from pyworkflow.viewer import DESKTOP_TKINTER
+from pwem.viewers import (ChimeraView, ChimeraClientView,
+                          ObjectView, EmProtocolViewer)
 
-from nysbc.protocols import Prot3DFSC
-
-VOL_ORIG = 0
-VOL_TH = 1
-VOL_THBIN = 2
-VOL_ALL = 3
-
-VOLUME_SLICES = 0
-VOLUME_CHIMERA = 1
+from .protocols import Prot3DFSC
+from .constants import *
 
 
-class ThreedFscViewer(ProtocolViewer):
+class ThreedFscViewer(EmProtocolViewer):
     """ Visualization of 3D FSC results. """
            
     _environments = [DESKTOP_TKINTER]
     _targets = [Prot3DFSC]
-    _label = 'viewer 3D FSC'
+    _label = 'viewer'
 
     def __init__(self, **kwargs):
-        ProtocolViewer.__init__(self, **kwargs)
+        EmProtocolViewer.__init__(self, **kwargs)
 
     def _defineParams(self, form):
         form.addSection(label='Visualization')
@@ -104,16 +97,15 @@ class ThreedFscViewer(ProtocolViewer):
 
         if len(volumes) > 1:
             cmdFile = self.protocol._getExtraPath('chimera_volumes.cmd')
-            f = open(cmdFile, 'w+')
-            for volFn in volumes:
-                # We assume that the chimera script will be generated
-                # at the same folder as 3DFSC volumes
-                vol = volFn.replace(':mrc', '')
-                localVol = os.path.basename(vol)
-                if exists(vol):
-                    f.write("open %s\n" % localVol)
-            f.write('tile\n')
-            f.close()
+            with open(cmdFile, 'w+') as f:
+                for volFn in volumes:
+                    # We assume that the chimera script will be generated
+                    # at the same folder as 3DFSC volumes
+                    vol = volFn.replace(':mrc', '')
+                    localVol = os.path.basename(vol)
+                    if exists(vol):
+                        f.write("open %s\n" % localVol)
+                f.write('tile\n')
             view = ChimeraView(cmdFile)
         else:
             view = ChimeraClientView(volumes[0])
