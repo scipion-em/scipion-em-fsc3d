@@ -6,12 +6,13 @@ FSC3D plugin
 
 This plugin provide a wrapper around `3DFSC <https://github.com/nysbc/Anisotropy/>`_ program developed at Salk Institute and NYSBC.
 
-+------------------+------------------+
-| stable: |stable| | devel: | |devel| |
-+------------------+------------------+
++--------------+----------------+--------------------+
+| prod: |prod| | devel: |devel| | support: |support| |
++--------------+----------------+--------------------+
 
-.. |stable| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_prod.svg
-.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_sdevel.svg
+.. |prod| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_prod.svg
+.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_devel.svg
+.. |support| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_support.svg
 
 
 Installation
