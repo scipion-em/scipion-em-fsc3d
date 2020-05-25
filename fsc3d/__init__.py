@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -25,59 +25,54 @@
 # **************************************************************************
 
 import os
-import pyworkflow.em
+
+import pwem
 from pyworkflow import Config
 from pyworkflow.utils import Environ
+
+from .constants import *
 
 _logo = "salk_logo.jpg"
 _references = ['tan2017']
 
-NYSBC_3DFSC_HOME = 'NYSBC_3DFSC_HOME'
-NYSBC_3DFSC_ACTIVATION_CMD = "NYSBC_3DFSC_ACTIVATION_CMD"
 
-
-class Plugin(pyworkflow.em.Plugin):
-    _homeVar = NYSBC_3DFSC_HOME
-    _pathVars = [NYSBC_3DFSC_HOME]
-    _supportedVersions = ['2.5', '3.0']
+class Plugin(pwem.Plugin):
+    _homeVar = FSC3D_HOME
+    _pathVars = [FSC3D_HOME]
+    _supportedVersions = V3_0
+    _condaActivationCmd = None
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(NYSBC_3DFSC_HOME, 'nysbc3DFSC-2.5')
-        cls._defineVar(NYSBC_3DFSC_ACTIVATION_CMD, 'conda activate fsc')
+        cls._defineEmVar(FSC3D_HOME, 'fsc3D-3.0')
+        cls._defineVar(FSC3D_ACTIVATION_CMD, 'conda activate 3DFSC')
 
     @classmethod
     def getEnviron(cls):
         """ Setup the environment variables needed to launch 3DFSC. """
         environ = Environ(os.environ)
+        if 'PYTHONPATH' in environ:
+            # this is required for python virtual env to work
+            del environ['PYTHONPATH']
         environ.update({'PATH': cls.getHome('ThreeDFSC')},
                        position=Environ.BEGIN)
 
         return environ
 
     @classmethod
-    def getProgram(cls):
+    def getFSCEnvActivation(cls):
+        activation = cls.getVar(FSC3D_ACTIVATION_CMD)
+        scipionHome = Config.SCIPION_HOME + os.path.sep
+
+        return activation.replace(scipionHome, "", 1)
+
+    @classmethod
+    def runProgram(cls, protocol, args, cwd=None):
         """ Return the program binary that will be used. """
-        cmd = cls.getHome('ThreeDFSC', 'ThreeDFSC_Start.py')
-        return str(cmd)
-
-    @classmethod
-    def getCondaActivationCmd(cls):
-
-        condaActivationCmd = os.environ.get('CONDA_ACTIVATION_CMD', "")
-        if not condaActivationCmd:
-            print("WARNING!!: CONDA_ACTIVATION_CMD variable not defined. "
-                   "Relying on conda being in the PATH")
-        elif condaActivationCmd[-1] != ";":
-            condaActivationCmd += ";"
-        return condaActivationCmd
-
-    @classmethod
-    def getNYSBCACtivationCmd(cls):
-        cmd = cls.getVar(NYSBC_3DFSC_ACTIVATION_CMD) + ";"
-        # If variable comes from the config, scipion appends the scipion home, we should removr it
-        cmd = cmd.replace(Config.SCIPION_HOME+"/", "")
-        return cmd
+        cmd = '%s %s && ' % (cls.getCondaActivationCmd(),
+                             cls.getFSCEnvActivation())
+        cmd += cls.getHome('ThreeDFSC', 'ThreeDFSC_Start.py')
+        protocol.runJob(cmd, args, env=cls.getEnviron(), cwd=cwd)
 
     @classmethod
     def defineBinaries(cls, env):
@@ -87,23 +82,17 @@ class Plugin(pyworkflow.em.Plugin):
         if not condaActivationCmd:
             neededProgs = ['conda']
 
-        fsc_commands = [(condaActivationCmd + './install.sh',
+        condaActivationCmd += 'conda env create -f environment.yml &&'
+        fsc_commands = [(condaActivationCmd + 'touch IS_INSTALLED',
                          'IS_INSTALLED')]
 
-        envPath = os.environ.get('PATH', "")  # keep path since conda likely in there
+        envPath = os.environ.get('PATH', "")
+        # keep path since conda likely in there
         installEnvVars = {'PATH': envPath} if envPath else None
-        env.addPackage('nysbc3DFSC', version='2.5',
-                       tar='nysbc3DFSC-2.5.tgz',
+
+        env.addPackage('fsc3D', version='3.0',
+                       url='https://github.com/azazellochg/fsc3D/archive/3.0.tar.gz',
                        commands=fsc_commands,
                        neededProgs=neededProgs,
                        default=True,
                        vars=installEnvVars)
-
-        env.addPackage('nysbc3DFSC', version='3.0',
-                       tar='nysbc3DFSC-3.0.tgz',
-                       commands=fsc_commands,
-                       neededProgs=neededProgs,
-                       vars=installEnvVars)
-
-
-pyworkflow.em.Domain.registerPlugin(__name__)

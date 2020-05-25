@@ -1,4 +1,3 @@
-# coding: latin-1
 # **************************************************************************
 # *
 # * Authors:     Grigory Sharov (gsharov@mrc-lmb.cam.ac.uk)
@@ -7,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -24,19 +23,18 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
 
-@article{tan2017,
-  title={Addressing preferred specimen orientation in single-particle cryo-EM through tilting},
-  author={Tan, Y.Z. and Baldwin, P.R. and Davis, J.H. and Williamson, J.R. and Potter, C.S. and Carragher, B. and Lyumkis, D.},
-  journal={Nature methods},
-  volume={14},
-  number={8},
-  pages={793--796},
-  year={2017},
-  publisher={Nature Publishing Group},
-  doi = {http://dx.doi.org/10.1038/nmeth.4347}
-}
+FSC3D_HOME = "FSC3D_HOME"
+FSC3D_ACTIVATION_CMD = "FSC3D_ACTIVATION_CMD"
 
+# Viewer constants
+VOL_ORIG = 0
+VOL_TH = 1
+VOL_THBIN = 2
+VOL_ALL = 3
 
-"""
+VOLUME_SLICES = 0
+VOLUME_CHIMERA = 1
+
+# Supported versions
+V3_0 = '3.0'

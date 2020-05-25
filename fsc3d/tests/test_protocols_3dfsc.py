@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -24,11 +24,11 @@
 # *
 # **************************************************************************
 
-
-from pyworkflow.utils import exists
+from pyworkflow.utils import exists, magentaStr
 from pyworkflow.tests import BaseTest, DataSet, setupTestProject
-from pyworkflow.em.protocol import ProtImportVolumes, ProtImportMask
-from nysbc.protocols import Prot3DFSC
+from pwem.protocols import ProtImportVolumes, ProtImportMask
+
+from fsc3d.protocols import Prot3DFSC
 
 
 class Test3DFSCBase(BaseTest):
@@ -59,17 +59,22 @@ class Test3DFSCBase(BaseTest):
         return cls.protImport
 
 
-class TestNysbc3DFSC(Test3DFSCBase):
+class Test3DFSC(Test3DFSCBase):
     @classmethod
     def setUpClass(cls):
         setupTestProject(cls)
         Test3DFSCBase.setData()
+        print(magentaStr("\n==> Importing data - volume:"))
         cls.protImportVol = cls.runImportVolumes(cls.map3D, 3.54)
+        print(magentaStr("\n==> Importing data - volume half 1:"))
         cls.protImportHalf1 = cls.runImportVolumes(cls.half1, 3.54)
+        print(magentaStr("\n==> Importing data - volume half 2:"))
         cls.protImportHalf2 = cls.runImportVolumes(cls.half2, 3.54)
+        print(magentaStr("\n==> Importing data - mask:"))
         cls.protImportMask = cls.runImportMask(cls.mask, 3.54)
 
     def test_3DFSC1(self):
+        print(magentaStr("\n==> Testing fsc3d - no mask:"))
         protFsc = self.newProtocol(Prot3DFSC,
                                    inputVolume=self.protImportVol.outputVolume,
                                    volumeHalf1=self.protImportHalf1.outputVolume,
@@ -79,6 +84,7 @@ class TestNysbc3DFSC(Test3DFSCBase):
         self.assertTrue(exists(protFsc._getFileName('out_vol3DFSC')), "3D FSC has failed")
 
     def test_3DFSC2(self):
+        print(magentaStr("\n==> Testing fsc3d - with mask:"))
         protFsc = self.newProtocol(Prot3DFSC,
                                    inputVolume=self.protImportVol.outputVolume,
                                    volumeHalf1=self.protImportHalf1.outputVolume,

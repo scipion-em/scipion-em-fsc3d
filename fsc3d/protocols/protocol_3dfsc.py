@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -27,11 +27,12 @@
 import os
 
 import pyworkflow.protocol.params as params
-from pyworkflow.em.protocol import ProtAnalysis3D
-from pyworkflow.em.convert import ImageHandler
-from pyworkflow.em.data import Volume
-from pyworkflow.utils import join, basename, exists
-import nysbc
+from pwem.protocols import ProtAnalysis3D
+from pwem.emlib.image import ImageHandler
+from pwem.objects import Volume
+from pyworkflow.utils import exists
+
+from .. import Plugin
 
 
 class Prot3DFSC(ProtAnalysis3D):
@@ -42,7 +43,7 @@ class Prot3DFSC(ProtAnalysis3D):
      
     Find more information at https://github.com/nysbc/Anisotropy
     """
-    _label = '3D FSC'
+    _label = 'estimate resolution'
 
     INPUT_HELP = """ Required input volumes for 3D FSC:
         1. First half map of 3D reconstruction. Can be masked or unmasked.
@@ -78,20 +79,15 @@ class Prot3DFSC(ProtAnalysis3D):
 
         self._updateFilenamesDict(myDict)
 
-    #--------------------------- DEFINE param functions ------------------------
+    # --------------------------- DEFINE param functions ----------------------
 
     def _defineParams(self, form):
-        if self.isVersion3():
-            form.addHidden(params.USE_GPU, params.BooleanParam, default=False,
-                           label="Use GPU (vs CPU)",
-                           help="Set to true if you want the GPU implementation of "
-                                "3D FSC")
-            form.addHidden(params.GPU_LIST, params.StringParam, default='0',
-                           label="Choose GPU ID",
-                           help="GPU may have several cores. Set it to zero"
-                                " if you do not know what we are talking about."
-                                " First core index is 0, second 1 and so on.\n"
-                                "3DFSC can use only one GPU.")
+        form.addHidden(params.USE_GPU, params.BooleanParam, default=False,
+                       label="Use GPU?")
+        form.addHidden(params.GPU_LIST, params.StringParam, default='0',
+                       label="Choose GPU ID",
+                       help="Each GPU has a unique ID. If you have only "
+                            "one GPU, set ID to 0. 3DFSC can use only one GPU.")
 
         form.addSection(label='Input')
         form.addParam('inputVolume', params.PointerParam,
@@ -117,33 +113,33 @@ class Prot3DFSC(ProtAnalysis3D):
 
         form.addSection(label='Extra params')
         form.addParam('dTheta', params.FloatParam, default=20,
-                       label='Angle of cone (deg)',
-                       help='Angle of cone to be used for 3D FSC sampling in '
-                            'degrees. Default is 20 degrees.')
+                      label='Angle of cone (deg)',
+                      help='Angle of cone to be used for 3D FSC sampling in '
+                           'degrees. Default is 20 degrees.')
         form.addParam('fscCutoff', params.FloatParam, default=0.143,
-                       label='FSC cutoff',
-                       help='FSC cutoff criterion. 0.143 is default.')
+                      label='FSC cutoff',
+                      help='FSC cutoff criterion. 0.143 is default.')
         form.addParam('thrSph', params.FloatParam, default=0.5,
-                       label='Sphericity threshold',
-                       help='Threshold value for 3DFSC volume for calculating '
-                            'sphericity. 0.5 is default.')
+                      label='Sphericity threshold',
+                      help='Threshold value for 3DFSC volume for calculating '
+                           'sphericity. 0.5 is default.')
         form.addParam('hpFilter', params.FloatParam, default=200,
-                       label='High-pass filter (A)',
-                       help='High-pass filter for thresholding in Angstrom. '
-                            'Prevents small dips in directional FSCs at low '
-                            'spatial frequency due to noise from messing up '
-                            'the thresholding step. Decrease if you see a '
-                            'huge wedge missing from your thresholded 3DFSC '
-                            'volume. 200 Angstroms is default.')
+                      label='High-pass filter (A)',
+                      help='High-pass filter for thresholding in Angstrom. '
+                           'Prevents small dips in directional FSCs at low '
+                           'spatial frequency due to noise from messing up '
+                           'the thresholding step. Decrease if you see a '
+                           'huge wedge missing from your thresholded 3DFSC '
+                           'volume. 200 Angstroms is default.')
         form.addParam('numThr', params.IntParam, default=1,
-                       label='Number of threshold for sphericity',
-                       help='Calculate sphericities at different threshold '
-                            'cutoffs to determine sphericity deviation across '
-                            'spatial frequencies. This can be useful to '
-                            'evaluate possible effects of overfitting or '
-                            'improperly assigned orientations.')
+                      label='Number of threshold for sphericity',
+                      help='Calculate sphericities at different threshold '
+                           'cutoffs to determine sphericity deviation across '
+                           'spatial frequencies. This can be useful to '
+                           'evaluate possible effects of overfitting or '
+                           'improperly assigned orientations.')
 
-    #--------------------------- INSERT steps functions ------------------------
+    # --------------------------- INSERT steps functions ----------------------
     
     def _insertAllSteps(self):
         # Insert processing steps
@@ -152,7 +148,7 @@ class Prot3DFSC(ProtAnalysis3D):
         self._insertFunctionStep('run3DFSCStep')
         self._insertFunctionStep('createOutputStep')
 
-    #--------------------------- STEPS functions -------------------------------
+    # --------------------------- STEPS functions -----------------------------
     
     def convertInputStep(self):
         """ Convert input volumes to .mrc as expected by 3DFSC."""
@@ -164,26 +160,18 @@ class Prot3DFSC(ProtAnalysis3D):
                    self._getFileName('input_half2Fn'))
         ih.convert(self.inputVolume.get().getLocation(),
                    self._getFileName('input_volFn'))
-        if self.maskVolume.get() is not None:
+        if self.maskVolume.hasValue():
             ih.convert(self.maskVolume.get().getLocation(),
                        self._getFileName('input_maskFn'))
 
     def run3DFSCStep(self):
         args = self._getArgs()
-        param = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.iteritems()])
+        params = ' '.join(['%s=%s' % (k, str(v)) for k, v in args.items()])
 
-        if self.isVersion3() and self.useGpu:
-            param += ' --gpu --gpu_id=%s' % self.gpuList.get()
+        if self.useGpu:
+            params += ' --gpu --gpu_id=%s' % self.gpuList.get()
 
-        program = nysbc.Plugin.getProgram()
-        self.info("**Running:** %s %s" % (program, param))
-        cmd = "unset PYTHONPATH;"
-        cmd += nysbc.Plugin.getCondaActivationCmd()
-        cmd += nysbc.Plugin.getNYSBCACtivationCmd()
-        cmd += 'python %s %s; conda deactivate' % (program, param)
-
-        self.runJob(cmd, '', cwd=self._getExtraPath(),
-                    env=nysbc.Plugin.getEnviron())
+        Plugin.runProgram(self, params, cwd=self._getExtraPath())
         if not exists(self._getFileName('out_vol3DFSC')):
             raise Exception('3D FSC run failed!')
 
@@ -198,7 +186,7 @@ class Prot3DFSC(ProtAnalysis3D):
             self._defineOutputs(outputVolume=vol)
             self._defineSourceRelation(self.inputVolume, vol)
 
-    #--------------------------- INFO functions --------------------------------
+    # --------------------------- INFO functions ------------------------------
     
     def _summary(self):
         summary = []
@@ -223,21 +211,20 @@ class Prot3DFSC(ProtAnalysis3D):
         if half1.getXDim() != half2.getXDim():
             errors.append('The selected half volumes have not the same '
                           'dimensions.')
-        if self.applyMask and mask:
-            if mask.getXDim() != self.inputVolume.get().getXDim():
-                errors.append('Input volume and the mask have different '
-                              'dimensions.')
+        if self.applyMask and (mask.getXDim() != self.inputVolume.get().getXDim()):
+            errors.append('Input volume and the mask have different '
+                          'dimensions.')
                 
         return errors
     
-    #--------------------------- UTILS functions -------------------------------
+    # --------------------------- UTILS functions -----------------------------
  
     def _getArgs(self):
         """ Prepare the args dictionary."""
 
-        args = {'--halfmap1': basename(self._getFileName('input_half1Fn')),
-                '--halfmap2': basename(self._getFileName('input_half2Fn')),
-                '--fullmap': basename(self._getFileName('input_volFn')),
+        args = {'--halfmap1': os.path.basename(self._getFileName('input_half1Fn')),
+                '--halfmap2': os.path.basename(self._getFileName('input_half2Fn')),
+                '--fullmap': os.path.basename(self._getFileName('input_volFn')),
                 '--apix': self.inputVolume.get().getSamplingRate(),
                 '--ThreeDFSC': '3D-FSC',
                 '--dthetaInDegrees': self.dTheta.get(),
@@ -247,22 +234,17 @@ class Prot3DFSC(ProtAnalysis3D):
                 '--numThresholdsForSphericityCalcs': self.numThr.get()
                 }
         if self.applyMask and self.maskVolume:
-            args.update({'--mask': basename(self._getFileName('input_maskFn'))})
+            args.update({'--mask': os.path.basename(self._getFileName('input_maskFn'))})
 
-        if self.isVersion3():
-            args.update({'--histogram': os.path.basename(self._getFileName('out_histogram'))})
+        args.update({'--histogram': os.path.basename(self._getFileName('out_histogram').replace('.png', ''))})
 
         return args
 
     def findSphericity(self, fn):
-        f = open(fn, 'r')
-        sph = 0.
-        for line in f.readlines():
-            if 'Sphericity is ' in line:
-                sph = float(line.split()[2])
-        f.close()
+        with open(fn, 'r') as f:
+            sph = 0.
+            for line in f:
+                if 'Sphericity is ' in line:
+                    sph = float(line.split()[2])
 
         return sph
-
-    def isVersion3(self):
-        return nysbc.Plugin.getActiveVersion().startswith("3.")
