@@ -96,7 +96,7 @@ class ThreedFscViewer(EmProtocolViewer):
         volumes = self._getVolumeNames()
 
         if len(volumes) > 1:
-            cmdFile = self.protocol._getExtraPath('chimera_volumes.cmd')
+            cmdFile = self.protocol._getExtraPath('chimera_volumes.cxc')
             with open(cmdFile, 'w+') as f:
                 for volFn in volumes:
                     # We assume that the chimera script will be generated
