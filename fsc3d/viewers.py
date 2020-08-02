@@ -31,8 +31,7 @@ import matplotlib.pyplot as plt
 from pyworkflow.protocol.params import LabelParam, EnumParam
 from pyworkflow.utils import exists
 from pyworkflow.viewer import DESKTOP_TKINTER
-from pwem.viewers import (ChimeraView, ChimeraClientView,
-                          ObjectView, EmProtocolViewer)
+from pwem.viewers import ChimeraView, ObjectView, EmProtocolViewer
 
 from .protocols import Prot3DFSC
 from .constants import *
@@ -94,22 +93,17 @@ class ThreedFscViewer(EmProtocolViewer):
     def _showVolumesChimera(self):
         """ Create a chimera script to visualize selected volumes. """
         volumes = self._getVolumeNames()
-
-        if len(volumes) > 1:
-            cmdFile = self.protocol._getExtraPath('chimera_volumes.cxc')
-            with open(cmdFile, 'w+') as f:
-                for volFn in volumes:
-                    # We assume that the chimera script will be generated
-                    # at the same folder as 3DFSC volumes
-                    vol = volFn.replace(':mrc', '')
-                    localVol = os.path.basename(vol)
-                    if exists(vol):
-                        f.write("open %s\n" % localVol)
-                f.write('tile\n')
-            view = ChimeraView(cmdFile)
-        else:
-            view = ChimeraClientView(volumes[0])
-
+        cmdFile = self.protocol._getExtraPath('chimera_volumes.cxc')
+        with open(cmdFile, 'w+') as f:
+            for vol in volumes:
+                # We assume that the chimera script will be generated
+                # at the same folder as 3DFSC volumes
+                if exists(vol):
+                    localVol = os.path.relpath(vol,
+                                               self.protocol._getExtraPath())
+                    f.write("open %s\n" % localVol)
+            f.write('tile\n')
+        view = ChimeraView(cmdFile)
         return [view]
 
     def _createVolumesSqlite(self):
@@ -120,7 +114,7 @@ class ThreedFscViewer(EmProtocolViewer):
         vols = self._getVolumeNames()
         files = []
         for vol in vols:
-            if os.path.exists(vol):
+            if exists(vol):
                 files.append(vol)
         self.createVolumesSqlite(files, path, samplingRate)
         return [ObjectView(self._project, self.protocol.strId(), path)]
