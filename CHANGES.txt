@@ -1,3 +1,4 @@
+3.0.6 - ChimeraX support
 3.0.5 - changed version to reflect Scipion 3 support
 1.0.5:
     - switch to a fork of Anisotropy software
