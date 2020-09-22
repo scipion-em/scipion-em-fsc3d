@@ -137,6 +137,8 @@ class ThreedFscViewer(EmProtocolViewer):
         self._showPlot('out_plot3DFSC')
 
     def _showChimera(self, param=None):
+        return [self.errorMessage('ChimeraX is not supported for this animation yet.',
+                                  title="Visualization error")]
         cmdFile = self.protocol._getFileName('out_cmdChimera')
         view = ChimeraView(cmdFile)
         return [view]
