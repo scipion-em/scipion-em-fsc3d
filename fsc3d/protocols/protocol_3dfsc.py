@@ -73,7 +73,7 @@ class Prot3DFSC(ProtAnalysis3D):
                   'out_vol3DFSC': self._getExtraPath('Results_3D-FSC/3D-FSC.mrc'),
                   'out_vol3DFSC-th': self._getExtraPath('Results_3D-FSC/3D-FSC_Thresholded.mrc'),
                   'out_vol3DFSC-thbin': self._getExtraPath('Results_3D-FSC/3D-FSC_ThresholdedBinarized.mrc'),
-                  'out_cmdChimera': self._getExtraPath('Results_3D-FSC/Chimera/3DFSCPlot_Chimera.cmd'),
+                  'out_cmdChimera': self._getExtraPath('Results_3D-FSC/Chimera/3DFSCPlot_Chimera.cxc'),
                   'out_globalFSC': self._getExtraPath('Results_3D-FSC/ResEM3D-FSCOutglobalFSC.csv')
                   }
 
