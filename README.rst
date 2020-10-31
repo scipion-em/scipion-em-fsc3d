@@ -6,6 +6,27 @@ FSC3D plugin
 
 This plugin provide a wrapper around `3DFSC <https://github.com/nysbc/Anisotropy/>`_ program developed at Salk Institute and NYSBC.
 
+.. image:: https://img.shields.io/pypi/v/scipion-em-fsc3d.svg
+        :target: https://pypi.python.org/pypi/scipion-em-fsc3d
+        :alt: PyPI release
+
+.. image:: https://img.shields.io/pypi/l/scipion-em-fsc3d.svg
+        :target: https://pypi.python.org/pypi/scipion-em-fsc3d
+        :alt: License
+
+.. image:: https://img.shields.io/pypi/pyversions/scipion-em-fsc3d.svg
+        :target: https://pypi.python.org/pypi/scipion-em-fsc3d
+        :alt: Supported Python versions
+
+.. image:: https://img.shields.io/sonar/quality_gate/scipion-em_scipion-em-fsc3d?server=https%3A%2F%2Fsonarcloud.io
+        :target: https://sonarcloud.io/dashboard?id=scipion-em_scipion-em-fsc3d
+        :alt: SonarCloud quality gate
+
+.. image:: https://img.shields.io/pypi/dm/scipion-em-fsc3d
+        :target: https://pypi.python.org/pypi/scipion-em-fsc3d
+        :alt: Downloads
+
+
 +--------------+----------------+--------------------+
 | prod: |prod| | devel: |devel| | support: |support| |
 +--------------+----------------+--------------------+
