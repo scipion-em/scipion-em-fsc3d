@@ -35,7 +35,7 @@ from .constants import *
 _logo = "salk_logo.jpg"
 _references = ['tan2017']
 _url = "https://github.com/scipion-em/scipion-em-fsc3d"
-__version__="3.0.6"
+__version__="3.0.7"
 
 class Plugin(pwem.Plugin):
     _homeVar = FSC3D_HOME
