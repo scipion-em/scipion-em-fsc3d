@@ -139,9 +139,9 @@ class ThreedFscViewer(EmProtocolViewer):
     def _showChimera(self, param=None):
         return [self.errorMessage('ChimeraX is not supported for this animation yet.',
                                   title="Visualization error")]
-        #cmdFile = self.protocol._getFileName('out_cmdChimera')
-        #view = ChimeraView(cmdFile)
-        #return [view]
+        # cmdFile = self.protocol._getFileName('out_cmdChimera')
+        # view = ChimeraView(cmdFile)
+        # return [view]
 
     def _getVolumeNames(self):
         volsFn = ['out_vol3DFSC', 'out_vol3DFSC-th', 'out_vol3DFSC-thbin']
