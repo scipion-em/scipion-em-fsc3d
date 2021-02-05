@@ -29,7 +29,6 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 
 from pyworkflow.protocol.params import LabelParam, EnumParam
-from pyworkflow.utils import exists
 from pyworkflow.viewer import DESKTOP_TKINTER
 from pwem.viewers import ChimeraView, ObjectView, EmProtocolViewer
 
@@ -98,7 +97,7 @@ class ThreedFscViewer(EmProtocolViewer):
             for vol in volumes:
                 # We assume that the chimera script will be generated
                 # at the same folder as 3DFSC volumes
-                if exists(vol):
+                if os.path.exists(vol):
                     localVol = os.path.relpath(vol,
                                                self.protocol._getExtraPath())
                     f.write("open %s\n" % localVol)
@@ -114,7 +113,7 @@ class ThreedFscViewer(EmProtocolViewer):
         vols = self._getVolumeNames()
         files = []
         for vol in vols:
-            if exists(vol):
+            if os.path.exists(vol):
                 files.append(vol)
         self.createVolumesSqlite(files, path, samplingRate)
         return [ObjectView(self._project, self.protocol.strId(), path)]

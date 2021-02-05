@@ -27,7 +27,6 @@
 import os
 
 import pyworkflow.protocol.params as params
-from pyworkflow.utils import exists
 from pwem.protocols import ProtAnalysis3D
 from pwem.emlib.image import ImageHandler
 from pwem.objects import Volume
@@ -172,11 +171,11 @@ class Prot3DFSC(ProtAnalysis3D):
             params += ' --gpu --gpu_id=%s' % self.gpuList.get()
 
         Plugin.runProgram(self, params, cwd=self._getExtraPath())
-        if not exists(self._getFileName('out_vol3DFSC')):
-            raise Exception('3D FSC run failed!')
+        if not os.path.exists(self._getFileName('out_vol3DFSC')):
+            raise RuntimeError('3D FSC run failed!')
 
     def createOutputStep(self):
-        if exists(self._getFileName('out_vol3DFSC')):
+        if os.path.exists(self._getFileName('out_vol3DFSC')):
             inputVol = self.inputVolume.get()
             vol = Volume()
             vol.setObjLabel('3D FSC')
