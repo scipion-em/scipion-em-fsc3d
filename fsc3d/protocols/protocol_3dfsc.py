@@ -27,6 +27,7 @@
 import os
 
 import pyworkflow.protocol.params as params
+from pyworkflow.constants import PROD
 from pwem.protocols import ProtAnalysis3D
 from pwem.emlib.image import ImageHandler
 from pwem.objects import Volume
@@ -43,6 +44,7 @@ class Prot3DFSC(ProtAnalysis3D):
     Find more information at https://github.com/nysbc/Anisotropy
     """
     _label = 'estimate resolution'
+    _devStatus = PROD
 
     INPUT_HELP = """ Required input volumes for 3D FSC:
         1. First half map of 3D reconstruction. Can be masked or unmasked.
