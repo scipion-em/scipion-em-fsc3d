@@ -2,7 +2,7 @@
 FSC3D plugin
 ============
 
-This plugin provide a wrapper around `3DFSC <https://github.com/nysbc/Anisotropy/>`_ program developed at Salk Institute and NYSBC.
+This plugin provides a wrapper for `3DFSC <https://github.com/nysbc/Anisotropy/>`_ program developed at Salk Institute and NYSBC.
 
 .. image:: https://img.shields.io/pypi/v/scipion-em-fsc3d.svg
         :target: https://pypi.python.org/pypi/scipion-em-fsc3d
@@ -23,15 +23,6 @@ This plugin provide a wrapper around `3DFSC <https://github.com/nysbc/Anisotropy
 .. image:: https://img.shields.io/pypi/dm/scipion-em-fsc3d
         :target: https://pypi.python.org/pypi/scipion-em-fsc3d
         :alt: Downloads
-
-
-+--------------+----------------+--------------------+
-| prod: |prod| | devel: |devel| | support: |support| |
-+--------------+----------------+--------------------+
-
-.. |prod| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_prod.svg
-.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_devel.svg
-.. |support| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_support.svg
 
 
 Installation
@@ -57,7 +48,7 @@ b) Developer's version
 
     .. code-block::
 
-       scipion installp -p path_to_scipion-em-fsc3d --devel
+       scipion installp -p /path/to/scipion-em-fsc3d --devel
 
 FSC3D binaries will be installed automatically with the plugin at **software/em/fsc3D-3.0**, but you can also link an existing installation.
 
