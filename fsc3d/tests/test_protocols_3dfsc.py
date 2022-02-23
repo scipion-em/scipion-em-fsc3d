@@ -30,7 +30,7 @@ from pyworkflow.utils import magentaStr
 from pyworkflow.tests import BaseTest, DataSet, setupTestProject
 from pwem.protocols import ProtImportVolumes, ProtImportMask
 
-from fsc3d.protocols import Prot3DFSC
+from ..protocols import Prot3DFSC
 
 
 class Test3DFSCBase(BaseTest):
