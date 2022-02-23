@@ -32,7 +32,7 @@ from pyworkflow.utils import Environ
 
 from .constants import *
 
-__version__ = '3.0.8'
+__version__ = '3.0.9'
 _logo = "salk_logo.jpg"
 _references = ['tan2017']
 
