@@ -24,11 +24,13 @@
 # *
 # **************************************************************************
 
-from pyworkflow.utils import exists, magentaStr
+import os
+
+from pyworkflow.utils import magentaStr
 from pyworkflow.tests import BaseTest, DataSet, setupTestProject
 from pwem.protocols import ProtImportVolumes, ProtImportMask
 
-from fsc3d.protocols import Prot3DFSC
+from ..protocols import Prot3DFSC
 
 
 class Test3DFSCBase(BaseTest):
@@ -81,7 +83,7 @@ class Test3DFSC(Test3DFSCBase):
                                    volumeHalf2=self.protImportHalf2.outputVolume)
         self.launchProtocol(protFsc)
         protFsc._initialize()
-        self.assertTrue(exists(protFsc._getFileName('out_vol3DFSC')), "3D FSC has failed")
+        self.assertTrue(os.path.exists(protFsc._getFileName('out_vol3DFSC')), "3D FSC has failed")
 
     def test_3DFSC2(self):
         print(magentaStr("\n==> Testing fsc3d - with mask:"))
@@ -93,4 +95,4 @@ class Test3DFSC(Test3DFSCBase):
                                    applyMask=True)
         self.launchProtocol(protFsc)
         protFsc._initialize()
-        self.assertTrue(exists(protFsc._getFileName('out_vol3DFSC')), "3D FSC (with mask) has failed")
+        self.assertTrue(os.path.exists(protFsc._getFileName('out_vol3DFSC')), "3D FSC (with mask) has failed")

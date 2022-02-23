@@ -27,10 +27,11 @@
 import os
 
 import pyworkflow.protocol.params as params
+from pyworkflow.constants import PROD
+from pyworkflow.utils import cleanPath
 from pwem.protocols import ProtAnalysis3D
 from pwem.emlib.image import ImageHandler
 from pwem.objects import Volume
-from pyworkflow.utils import exists
 
 from .. import Plugin
 
@@ -44,6 +45,7 @@ class Prot3DFSC(ProtAnalysis3D):
     Find more information at https://github.com/nysbc/Anisotropy
     """
     _label = 'estimate resolution'
+    _devStatus = PROD
 
     INPUT_HELP = """ Required input volumes for 3D FSC:
         1. First half map of 3D reconstruction. Can be masked or unmasked.
@@ -63,18 +65,18 @@ class Prot3DFSC(ProtAnalysis3D):
     def _createFilenameTemplates(self):
         """ Centralize how files are called for iterations and references. """
         myDict = {
-                  'input_volFn': self._getExtraPath('volume_full.mrc'),
-                  'input_half1Fn': self._getExtraPath('volume_half1.mrc'),
-                  'input_half2Fn': self._getExtraPath('volume_half2.mrc'),
-                  'input_maskFn': self._getExtraPath('mask.mrc'),
-                  'out_histogram': self._getExtraPath('Results_3D-FSC/histogram.png'),
-                  'out_plot3DFSC': self._getExtraPath('Results_3D-FSC/Plots3D-FSC.jpg'),
-                  'out_plotFT': self._getExtraPath('Results_3D-FSC/FTPlot3D-FSC.jpg'),
-                  'out_vol3DFSC': self._getExtraPath('Results_3D-FSC/3D-FSC.mrc'),
-                  'out_vol3DFSC-th': self._getExtraPath('Results_3D-FSC/3D-FSC_Thresholded.mrc'),
-                  'out_vol3DFSC-thbin': self._getExtraPath('Results_3D-FSC/3D-FSC_ThresholdedBinarized.mrc'),
-                  'out_cmdChimera': self._getExtraPath('Results_3D-FSC/Chimera/3DFSCPlot_Chimera.cxc'),
-                  'out_globalFSC': self._getExtraPath('Results_3D-FSC/ResEM3D-FSCOutglobalFSC.csv')
+                  'input_volFn': self._getTmpPath('volume_full.mrc'),
+                  'input_half1Fn': self._getTmpPath('volume_half1.mrc'),
+                  'input_half2Fn': self._getTmpPath('volume_half2.mrc'),
+                  'input_maskFn': self._getTmpPath('mask.mrc'),
+                  'out_histogram': self._getExtraPath('Results_vol/histogram.png'),
+                  'out_plot3DFSC': self._getExtraPath('Results_vol/Plotsvol.jpg'),
+                  'out_plotFT': self._getExtraPath('Results_vol/FTPlotvol.jpg'),
+                  'out_vol3DFSC': self._getExtraPath('Results_vol/vol.mrc'),
+                  'out_vol3DFSC-th': self._getExtraPath('Results_vol/vol_Thresholded.mrc'),
+                  'out_vol3DFSC-thbin': self._getExtraPath('Results_vol/vol_ThresholdedBinarized.mrc'),
+                  'out_cmdChimera': self._getExtraPath('Results_vol/Chimera/3DFSCPlot_Chimera.cmd'),
+                  'out_globalFSC': self._getExtraPath('Results_vol/ResEMvolOutglobalFSC.csv')
                   }
 
         self._updateFilenamesDict(myDict)
@@ -172,16 +174,19 @@ class Prot3DFSC(ProtAnalysis3D):
             params += ' --gpu --gpu_id=%s' % self.gpuList.get()
 
         Plugin.runProgram(self, params, cwd=self._getExtraPath())
-        if not exists(self._getFileName('out_vol3DFSC')):
-            raise Exception('3D FSC run failed!')
+        if not os.path.exists(self._getFileName('out_vol3DFSC')):
+            raise RuntimeError('3D FSC run failed!')
 
     def createOutputStep(self):
-        if exists(self._getFileName('out_vol3DFSC')):
+        if os.path.exists(self._getFileName('out_vol3DFSC')):
             inputVol = self.inputVolume.get()
             vol = Volume()
             vol.setObjLabel('3D FSC')
             vol.setFileName(self._getFileName('out_vol3DFSC'))
             vol.setSamplingRate(inputVol.getSamplingRate())
+
+            # remove useless output
+            cleanPath(self._getExtraPath('Results_vol/ResEMvolOut.mrc'))
 
             self._defineOutputs(outputVolume=vol)
             self._defineSourceRelation(self.inputVolume, vol)
@@ -222,11 +227,11 @@ class Prot3DFSC(ProtAnalysis3D):
     def _getArgs(self):
         """ Prepare the args dictionary."""
 
-        args = {'--halfmap1': os.path.basename(self._getFileName('input_half1Fn')),
-                '--halfmap2': os.path.basename(self._getFileName('input_half2Fn')),
-                '--fullmap': os.path.basename(self._getFileName('input_volFn')),
+        args = {'--halfmap1': os.path.relpath(self._getFileName('input_half1Fn'), self._getExtraPath()),
+                '--halfmap2': os.path.relpath(self._getFileName('input_half2Fn'), self._getExtraPath()),
+                '--fullmap': os.path.relpath(self._getFileName('input_volFn'), self._getExtraPath()),
                 '--apix': self.inputVolume.get().getSamplingRate(),
-                '--ThreeDFSC': '3D-FSC',
+                '--ThreeDFSC': 'vol',
                 '--dthetaInDegrees': self.dTheta.get(),
                 '--FSCCutoff': self.fscCutoff.get(),
                 '--ThresholdForSphericity': self.thrSph.get(),
@@ -234,9 +239,9 @@ class Prot3DFSC(ProtAnalysis3D):
                 '--numThresholdsForSphericityCalcs': self.numThr.get()
                 }
         if self.applyMask and self.maskVolume:
-            args.update({'--mask': os.path.basename(self._getFileName('input_maskFn'))})
+            args['--mask'] = os.path.relpath(self._getFileName('input_maskFn'), self._getExtraPath())
 
-        args.update({'--histogram': os.path.basename(self._getFileName('out_histogram').replace('.png', ''))})
+        args['--histogram'] = 'histogram'
 
         return args
 

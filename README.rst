@@ -2,23 +2,33 @@
 FSC3D plugin
 ============
 
-**ATTENTION: This plugin has been renamed from NYSBC to FSC3D.**
+This plugin provides a wrapper for `3DFSC <https://github.com/nysbc/Anisotropy/>`_ program developed at Salk Institute and NYSBC.
 
-This plugin provide a wrapper around `3DFSC <https://github.com/nysbc/Anisotropy/>`_ program developed at Salk Institute and NYSBC.
+.. image:: https://img.shields.io/pypi/v/scipion-em-fsc3d.svg
+        :target: https://pypi.python.org/pypi/scipion-em-fsc3d
+        :alt: PyPI release
 
-+--------------+----------------+--------------------+
-| prod: |prod| | devel: |devel| | support: |support| |
-+--------------+----------------+--------------------+
+.. image:: https://img.shields.io/pypi/l/scipion-em-fsc3d.svg
+        :target: https://pypi.python.org/pypi/scipion-em-fsc3d
+        :alt: License
 
-.. |prod| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_prod.svg
-.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_devel.svg
-.. |support| image:: http://scipion-test.cnb.csic.es:9980/badges/fsc3d_support.svg
+.. image:: https://img.shields.io/pypi/pyversions/scipion-em-fsc3d.svg
+        :target: https://pypi.python.org/pypi/scipion-em-fsc3d
+        :alt: Supported Python versions
+
+.. image:: https://img.shields.io/sonar/quality_gate/scipion-em_scipion-em-fsc3d?server=https%3A%2F%2Fsonarcloud.io
+        :target: https://sonarcloud.io/dashboard?id=scipion-em_scipion-em-fsc3d
+        :alt: SonarCloud quality gate
+
+.. image:: https://img.shields.io/pypi/dm/scipion-em-fsc3d
+        :target: https://pypi.python.org/pypi/scipion-em-fsc3d
+        :alt: Downloads
 
 
 Installation
 -------------
 
-You will need to use `3.0 <https://github.com/I2PC/scipion/releases/tag/V3.0.0>`_ version of Scipion to be able to run these protocols. To install the plugin, you have two options:
+You will need to use 3.0+ version of Scipion to be able to run these protocols. To install the plugin, you have two options:
 
 a) Stable version
 
@@ -38,7 +48,7 @@ b) Developer's version
 
     .. code-block::
 
-       scipion installp -p path_to_scipion-em-fsc3d --devel
+       scipion installp -p /path/to/scipion-em-fsc3d --devel
 
 FSC3D binaries will be installed automatically with the plugin at **software/em/fsc3D-3.0**, but you can also link an existing installation.
 
@@ -72,6 +82,7 @@ Supported versions
 
 Protocols
 ----------
+
 * resolution estimation
 
 References

@@ -29,7 +29,6 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 
 from pyworkflow.protocol.params import LabelParam, EnumParam
-from pyworkflow.utils import exists
 from pyworkflow.viewer import DESKTOP_TKINTER
 from pwem.viewers import ChimeraView, ObjectView, EmProtocolViewer
 
@@ -93,12 +92,12 @@ class ThreedFscViewer(EmProtocolViewer):
     def _showVolumesChimera(self):
         """ Create a chimera script to visualize selected volumes. """
         volumes = self._getVolumeNames()
-        cmdFile = self.protocol._getExtraPath('chimera_volumes.cxc')
+        cmdFile = self.protocol._getExtraPath('chimera_volumes.cmd')
         with open(cmdFile, 'w+') as f:
             for vol in volumes:
                 # We assume that the chimera script will be generated
                 # at the same folder as 3DFSC volumes
-                if exists(vol):
+                if os.path.exists(vol):
                     localVol = os.path.relpath(vol,
                                                self.protocol._getExtraPath())
                     f.write("open %s\n" % localVol)
@@ -114,7 +113,7 @@ class ThreedFscViewer(EmProtocolViewer):
         vols = self._getVolumeNames()
         files = []
         for vol in vols:
-            if exists(vol):
+            if os.path.exists(vol):
                 files.append(vol)
         self.createVolumesSqlite(files, path, samplingRate)
         return [ObjectView(self._project, self.protocol.strId(), path)]
@@ -139,9 +138,9 @@ class ThreedFscViewer(EmProtocolViewer):
     def _showChimera(self, param=None):
         return [self.errorMessage('ChimeraX is not supported for this animation yet.',
                                   title="Visualization error")]
-        cmdFile = self.protocol._getFileName('out_cmdChimera')
-        view = ChimeraView(cmdFile)
-        return [view]
+        # cmdFile = self.protocol._getFileName('out_cmdChimera')
+        # view = ChimeraView(cmdFile)
+        # return [view]
 
     def _getVolumeNames(self):
         volsFn = ['out_vol3DFSC', 'out_vol3DFSC-th', 'out_vol3DFSC-thbin']
