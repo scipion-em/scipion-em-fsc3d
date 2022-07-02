@@ -25,6 +25,7 @@
 # **************************************************************************
 
 import os
+from enum import Enum
 
 import pyworkflow.protocol.params as params
 from pyworkflow.constants import PROD
@@ -34,6 +35,10 @@ from pwem.emlib.image import ImageHandler
 from pwem.objects import Volume
 
 from .. import Plugin
+
+
+class outputs(Enum):
+    outputVolume = Volume
 
 
 class Prot3DFSC(ProtAnalysis3D):
@@ -46,6 +51,7 @@ class Prot3DFSC(ProtAnalysis3D):
     """
     _label = 'estimate resolution'
     _devStatus = PROD
+    _possibleOutputs = outputs
 
     INPUT_HELP = """ Required input volumes for 3D FSC:
         1. First half map of 3D reconstruction. Can be masked or unmasked.
@@ -188,7 +194,7 @@ class Prot3DFSC(ProtAnalysis3D):
             # remove useless output
             cleanPath(self._getExtraPath('Results_vol/ResEMvolOut.mrc'))
 
-            self._defineOutputs(outputVolume=vol)
+            self._defineOutputs(**{outputs.outputVolume.name: vol})
             self._defineSourceRelation(self.inputVolume, vol)
 
     # --------------------------- INFO functions ------------------------------
