@@ -32,7 +32,7 @@ from pyworkflow.utils import Environ
 
 from .constants import *
 
-__version__ = '3.0.9'
+__version__ = '3.1'
 _logo = "salk_logo.jpg"
 _references = ['tan2017']
 
@@ -40,14 +40,13 @@ _references = ['tan2017']
 class Plugin(pwem.Plugin):
     _homeVar = FSC3D_HOME
     _pathVars = [FSC3D_HOME]
-    _supportedVersions = V3_0
+    _supportedVersions = [V3_0]
     _url = "https://github.com/scipion-em/scipion-em-fsc3d"
-    _condaActivationCmd = None
 
     @classmethod
     def _defineVariables(cls):
         cls._defineEmVar(FSC3D_HOME, 'fsc3D-3.0')
-        cls._defineVar(FSC3D_ACTIVATION_CMD, 'conda activate 3DFSC')
+        cls._defineVar(FSC3D_ENV_ACTIVATION, DEFAULT_ACTIVATION_CMD)
 
     @classmethod
     def getEnviron(cls):
@@ -63,38 +62,50 @@ class Plugin(pwem.Plugin):
 
     @classmethod
     def getFSCEnvActivation(cls):
-        activation = cls.getVar(FSC3D_ACTIVATION_CMD)
+        activation = cls.getVar(FSC3D_ENV_ACTIVATION)
         scipionHome = Config.SCIPION_HOME + os.path.sep
 
         return activation.replace(scipionHome, "", 1)
 
     @classmethod
+    def getActivationCmd(cls):
+        """ Return the activation command. """
+        return '%s %s' % (cls.getCondaActivationCmd(),
+                          cls.getFSCEnvActivation())
+
+    @classmethod
+    def getDependencies(cls):
+        """ Return a list of dependencies. Include conda if
+        activation command was not found. """
+        condaActivationCmd = cls.getCondaActivationCmd()
+        neededProgs = []
+        if not condaActivationCmd:
+            neededProgs.append('conda')
+
+        return neededProgs
+
+    @classmethod
     def runProgram(cls, protocol, args, cwd=None):
         """ Return the program binary that will be used. """
-        cmd = '%s %s && ' % (cls.getCondaActivationCmd(),
-                             cls.getFSCEnvActivation())
+        cmd = f'{cls.getActivationCmd()} && '
         cmd += cls.getHome('ThreeDFSC', 'ThreeDFSC_Start.py')
         protocol.runJob(cmd, args, env=cls.getEnviron(), cwd=cwd)
 
     @classmethod
     def defineBinaries(cls, env):
-        # try to get CONDA activation command
-        condaActivationCmd = cls.getCondaActivationCmd()
-        neededProgs = []
-        if not condaActivationCmd:
-            neededProgs = ['conda']
-
-        condaActivationCmd += 'conda env create -f environment.yml &&'
-        fsc_commands = [(condaActivationCmd + 'touch IS_INSTALLED',
-                         'IS_INSTALLED')]
-
-        envPath = os.environ.get('PATH', "")
-        # keep path since conda likely in there
-        installEnvVars = {'PATH': envPath} if envPath else None
-
-        env.addPackage('fsc3D', version='3.0',
-                       url='https://github.com/azazellochg/fsc3D/archive/3.0.tar.gz',
-                       commands=fsc_commands,
-                       neededProgs=neededProgs,
-                       default=True,
-                       vars=installEnvVars)
+        for ver in cls._supportedVersions:
+            ENV = f"fsc3D-{ver}"
+            installCmds = [
+                cls.getCondaActivationCmd(),
+                f'cd ../ && rmdir {ENV} && '
+                f'conda create -y -n {ENV} python=3 cudatoolkit numba && '
+                f'conda activate {ENV} && ',
+                f'pip install scipy numpy click h5py scikit-image matplotlib mrcfile && ',
+                f'git clone -b scipion https://github.com/azazellochg/fsc3D {ENV}'
+            ]
+            fsc_commands = [(" ".join(installCmds), 'ThreeDFSC/ThreeDFSC_Start.py')]
+            env.addPackage('fsc3D', version=ver,
+                           tar='void.tgz',
+                           commands=fsc_commands,
+                           neededProgs=cls.getDependencies(),
+                           default=ver == V3_0)

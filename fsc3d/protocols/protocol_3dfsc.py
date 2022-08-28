@@ -25,6 +25,7 @@
 # **************************************************************************
 
 import os
+from enum import Enum
 
 import pyworkflow.protocol.params as params
 from pyworkflow.constants import PROD
@@ -34,6 +35,10 @@ from pwem.emlib.image import ImageHandler
 from pwem.objects import Volume
 
 from .. import Plugin
+
+
+class outputs(Enum):
+    outputVolume = Volume
 
 
 class Prot3DFSC(ProtAnalysis3D):
@@ -46,6 +51,7 @@ class Prot3DFSC(ProtAnalysis3D):
     """
     _label = 'estimate resolution'
     _devStatus = PROD
+    _possibleOutputs = outputs
 
     INPUT_HELP = """ Required input volumes for 3D FSC:
         1. First half map of 3D reconstruction. Can be masked or unmasked.
@@ -84,9 +90,11 @@ class Prot3DFSC(ProtAnalysis3D):
     # --------------------------- DEFINE param functions ----------------------
 
     def _defineParams(self, form):
-        form.addHidden(params.USE_GPU, params.BooleanParam, default=False,
+        form.addHidden(params.USE_GPU, params.BooleanParam,
+                       default=True,
                        label="Use GPU?")
-        form.addHidden(params.GPU_LIST, params.StringParam, default='0',
+        form.addHidden(params.GPU_LIST, params.StringParam,
+                       default='0',
                        label="Choose GPU ID",
                        help="Each GPU has a unique ID. If you have only "
                             "one GPU, set ID to 0. 3DFSC can use only one GPU.")
@@ -96,12 +104,17 @@ class Prot3DFSC(ProtAnalysis3D):
                       pointerClass='Volume',
                       label="Input volume", important=True,
                       help=self.INPUT_HELP)
+        form.addParam('provideHalfMaps', params.BooleanParam,
+                      default=False,
+                      label="Provide half-maps separately?")
         form.addParam('volumeHalf1', params.PointerParam,
                       label="Volume half 1", important=True,
+                      condition="provideHalfMaps",
                       pointerClass='Volume',
                       help=self.INPUT_HELP)
         form.addParam('volumeHalf2', params.PointerParam,
                       pointerClass='Volume',
+                      condition="provideHalfMaps",
                       label="Volume half 2", important=True,
                       help=self.INPUT_HELP)
 
@@ -125,7 +138,7 @@ class Prot3DFSC(ProtAnalysis3D):
                       label='Sphericity threshold',
                       help='Threshold value for 3DFSC volume for calculating '
                            'sphericity. 0.5 is default.')
-        form.addParam('hpFilter', params.FloatParam, default=200,
+        form.addParam('hpFilter', params.FloatParam, default=150,
                       label='High-pass filter (A)',
                       help='High-pass filter for thresholding in Angstrom. '
                            'Prevents small dips in directional FSCs at low '
@@ -155,10 +168,15 @@ class Prot3DFSC(ProtAnalysis3D):
     def convertInputStep(self):
         """ Convert input volumes to .mrc as expected by 3DFSC."""
         ih = ImageHandler()
+        if self.provideHalfMaps:
+            fnHalf1 = self.volumeHalf1.get().getLocation()
+            fnHalf2 = self.volumeHalf2.get().getLocation()
+        else:
+            fnHalf1, fnHalf2 = self.inputVolume.get().getHalfMaps().split(',')
 
-        ih.convert(self.volumeHalf1.get().getLocation(),
+        ih.convert(fnHalf1,
                    self._getFileName('input_half1Fn'))
-        ih.convert(self.volumeHalf2.get().getLocation(),
+        ih.convert(fnHalf2,
                    self._getFileName('input_half2Fn'))
         ih.convert(self.inputVolume.get().getLocation(),
                    self._getFileName('input_volFn'))
@@ -188,7 +206,7 @@ class Prot3DFSC(ProtAnalysis3D):
             # remove useless output
             cleanPath(self._getExtraPath('Results_vol/ResEMvolOut.mrc'))
 
-            self._defineOutputs(outputVolume=vol)
+            self._defineOutputs(**{outputs.outputVolume.name: vol})
             self._defineSourceRelation(self.inputVolume, vol)
 
     # --------------------------- INFO functions ------------------------------
@@ -198,7 +216,7 @@ class Prot3DFSC(ProtAnalysis3D):
         if self.getOutputsSize() > 0:
             logFn = self.getLogPaths()[0]
             sph = self.findSphericity(logFn)
-            summary.append('Sphericity: %0.3f ' % sph)
+            summary.append(f'Sphericity: {sph:0.3f}')
         else:
             summary.append("Output is not ready yet.")
 
@@ -207,18 +225,8 @@ class Prot3DFSC(ProtAnalysis3D):
     def _validate(self):
         errors = []
 
-        half1 = self.volumeHalf1.get()
-        half2 = self.volumeHalf2.get()
-        mask = self.maskVolume.get() or None
-        if half1.getSamplingRate() != half2.getSamplingRate():
-            errors.append('The selected half volumes have not the same pixel '
-                          'size.')
-        if half1.getXDim() != half2.getXDim():
-            errors.append('The selected half volumes have not the same '
-                          'dimensions.')
-        if self.applyMask and (mask.getXDim() != self.inputVolume.get().getXDim()):
-            errors.append('Input volume and the mask have different '
-                          'dimensions.')
+        if not self.provideHalfMaps and not self.inputVolume.get().hasHalfMaps():
+            errors.append("Input volume has no associated half-maps.")
                 
         return errors
     
@@ -227,22 +235,24 @@ class Prot3DFSC(ProtAnalysis3D):
     def _getArgs(self):
         """ Prepare the args dictionary."""
 
-        args = {'--halfmap1': os.path.relpath(self._getFileName('input_half1Fn'), self._getExtraPath()),
-                '--halfmap2': os.path.relpath(self._getFileName('input_half2Fn'), self._getExtraPath()),
-                '--fullmap': os.path.relpath(self._getFileName('input_volFn'), self._getExtraPath()),
+        args = {'--halfmap1': os.path.relpath(self._getFileName('input_half1Fn'),
+                                              self._getExtraPath()),
+                '--halfmap2': os.path.relpath(self._getFileName('input_half2Fn'),
+                                              self._getExtraPath()),
+                '--fullmap': os.path.relpath(self._getFileName('input_volFn'),
+                                             self._getExtraPath()),
                 '--apix': self.inputVolume.get().getSamplingRate(),
                 '--ThreeDFSC': 'vol',
                 '--dthetaInDegrees': self.dTheta.get(),
                 '--FSCCutoff': self.fscCutoff.get(),
                 '--ThresholdForSphericity': self.thrSph.get(),
                 '--HighPassFilter': self.hpFilter.get(),
-                '--numThresholdsForSphericityCalcs': self.numThr.get()
+                '--numThresholdsForSphericityCalcs': self.numThr.get(),
+                '--histogram': 'histogram'
                 }
         if self.applyMask and self.maskVolume:
-            args['--mask'] = os.path.relpath(self._getFileName('input_maskFn'), self._getExtraPath())
-
-        args['--histogram'] = 'histogram'
-
+            args['--mask'] = os.path.relpath(self._getFileName('input_maskFn'),
+                                             self._getExtraPath())
         return args
 
     def findSphericity(self, fn):

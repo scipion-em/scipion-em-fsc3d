@@ -1,3 +1,8 @@
+3.1:
+ - add possible outputs class
+ - update env vars
+ - default input is now a single volume with halves
+ - update test
 3.0.9 - move unused files to tmp
 3.0.8 - minor changes
 3.0.7 - add Github actions
