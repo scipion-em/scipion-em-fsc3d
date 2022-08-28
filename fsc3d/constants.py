@@ -24,8 +24,12 @@
 # *
 # **************************************************************************
 
+# Supported versions
+V3_0 = '3.0'
+
 FSC3D_HOME = "FSC3D_HOME"
-FSC3D_ACTIVATION_CMD = "FSC3D_ACTIVATION_CMD"
+FSC3D_ENV_ACTIVATION = "FSC3D_ENV_ACTIVATION"
+DEFAULT_ACTIVATION_CMD = f'conda activate fsc3D-{V3_0}'
 
 # Viewer constants
 VOL_ORIG = 0
@@ -35,6 +39,3 @@ VOL_ALL = 3
 
 VOLUME_SLICES = 0
 VOLUME_CHIMERA = 1
-
-# Supported versions
-V3_0 = '3.0'

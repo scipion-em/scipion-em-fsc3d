@@ -50,7 +50,7 @@ b) Developer's version
 
        scipion installp -p /path/to/scipion-em-fsc3d --devel
 
-FSC3D binaries will be installed automatically with the plugin at **software/em/fsc3D-3.0**, but you can also link an existing installation.
+FSC3D software will be installed automatically with the plugin but you can also use an existing installation by providing *FSC3D_HOME* (see below).
 
 **Important:** you need to have conda (miniconda3 or anaconda3) pre-installed to use this program.
 
@@ -65,7 +65,7 @@ CONDA_ACTIVATION_CMD = eval "$(/extra/miniconda3/bin/conda shell.bash hook)"
 *FSC3D_HOME* (default = software/em/fsc3D-3.0):
 Path where the 3DFSC is installed.
 
-*FSC3D_ACTIVATION_CMD* (default = conda activate 3DFSC):
+*FSC3D_ENV_ACTIVATION* (default = conda activate fsc3D-3.0):
 Command to activate the 3DFSC environment.
 
 

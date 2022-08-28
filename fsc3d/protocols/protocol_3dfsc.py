@@ -131,7 +131,7 @@ class Prot3DFSC(ProtAnalysis3D):
                       label='Sphericity threshold',
                       help='Threshold value for 3DFSC volume for calculating '
                            'sphericity. 0.5 is default.')
-        form.addParam('hpFilter', params.FloatParam, default=200,
+        form.addParam('hpFilter', params.FloatParam, default=150,
                       label='High-pass filter (A)',
                       help='High-pass filter for thresholding in Angstrom. '
                            'Prevents small dips in directional FSCs at low '
