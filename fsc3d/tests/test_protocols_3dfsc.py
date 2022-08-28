@@ -43,11 +43,14 @@ class Test3DFSCBase(BaseTest):
         cls.mask = cls.dataset.getFile('betagal_mask')
 
     @classmethod
-    def runImportVolumes(cls, pattern, samplingRate):
+    def runImportVolumes(cls, samplingRate, vol, half1, half2):
         """ Run an Import volumes protocol. """
         cls.protImport = cls.newProtocol(ProtImportVolumes,
-                                         filesPath=pattern,
-                                         samplingRate=samplingRate)
+                                         filesPath=vol,
+                                         samplingRate=samplingRate,
+                                         setHalfMaps=True,
+                                         half1map=half1,
+                                         half2map=half2)
         cls.launchProtocol(cls.protImport)
         return cls.protImport
 
@@ -67,32 +70,26 @@ class Test3DFSC(Test3DFSCBase):
         setupTestProject(cls)
         Test3DFSCBase.setData()
         print(magentaStr("\n==> Importing data - volume:"))
-        cls.protImportVol = cls.runImportVolumes(cls.map3D, 3.54)
-        print(magentaStr("\n==> Importing data - volume half 1:"))
-        cls.protImportHalf1 = cls.runImportVolumes(cls.half1, 3.54)
-        print(magentaStr("\n==> Importing data - volume half 2:"))
-        cls.protImportHalf2 = cls.runImportVolumes(cls.half2, 3.54)
+        cls.protImportVol = cls.runImportVolumes(3.54, cls.map3D, cls.half1, cls.half2)
         print(magentaStr("\n==> Importing data - mask:"))
         cls.protImportMask = cls.runImportMask(cls.mask, 3.54)
 
     def test_3DFSC1(self):
         print(magentaStr("\n==> Testing fsc3d - no mask:"))
         protFsc = self.newProtocol(Prot3DFSC,
-                                   inputVolume=self.protImportVol.outputVolume,
-                                   volumeHalf1=self.protImportHalf1.outputVolume,
-                                   volumeHalf2=self.protImportHalf2.outputVolume)
+                                   inputVolume=self.protImportVol.outputVolume)
         self.launchProtocol(protFsc)
         protFsc._initialize()
-        self.assertTrue(os.path.exists(protFsc._getFileName('out_vol3DFSC')), "3D FSC has failed")
+        self.assertTrue(os.path.exists(protFsc._getFileName('out_vol3DFSC')),
+                        "3D FSC has failed")
 
     def test_3DFSC2(self):
         print(magentaStr("\n==> Testing fsc3d - with mask:"))
         protFsc = self.newProtocol(Prot3DFSC,
                                    inputVolume=self.protImportVol.outputVolume,
-                                   volumeHalf1=self.protImportHalf1.outputVolume,
-                                   volumeHalf2=self.protImportHalf2.outputVolume,
                                    maskVolume=self.protImportMask.outputMask,
                                    applyMask=True)
         self.launchProtocol(protFsc)
         protFsc._initialize()
-        self.assertTrue(os.path.exists(protFsc._getFileName('out_vol3DFSC')), "3D FSC (with mask) has failed")
+        self.assertTrue(os.path.exists(protFsc._getFileName('out_vol3DFSC')),
+                        "3D FSC (with mask) has failed")
