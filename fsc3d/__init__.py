@@ -41,7 +41,7 @@ class Plugin(pwem.Plugin):
     _homeVar = FSC3D_HOME
     _pathVars = [FSC3D_HOME]
     _supportedVersions = [V3_0]
-    _url = "https://github.com/azazellochg/fsc3D"
+    _url = "https://github.com/scipion-em/scipion-em-fsc3d"
 
     @classmethod
     def _defineVariables(cls):
