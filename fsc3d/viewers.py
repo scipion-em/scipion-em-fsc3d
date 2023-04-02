@@ -92,7 +92,7 @@ class ThreedFscViewer(EmProtocolViewer):
     def _showVolumesChimera(self):
         """ Create a chimera script to visualize selected volumes. """
         volumes = self._getVolumeNames()
-        cmdFile = self.protocol._getExtraPath('chimera_volumes.cmd')
+        cmdFile = self.protocol._getExtraPath('chimera_volumes.cxc')
         with open(cmdFile, 'w+') as f:
             for vol in volumes:
                 # We assume that the chimera script will be generated
