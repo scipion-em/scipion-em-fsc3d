@@ -78,7 +78,7 @@ To check the installation, simply run the following Scipion test:
 Supported versions
 ------------------
 
-3.0
+3.0 (modified for Scipion, see https://github.com/azazellochg/fsc3D)
 
 Protocols
 ----------
