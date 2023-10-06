@@ -32,7 +32,7 @@ from pyworkflow.utils import Environ
 
 from .constants import *
 
-__version__ = '3.1.1'
+__version__ = '3.2'
 _logo = "salk_logo.jpg"
 _references = ['tan2017']
 
@@ -98,10 +98,10 @@ class Plugin(pwem.Plugin):
             installCmds = [
                 cls.getCondaActivationCmd(),
                 f'cd ../ && rmdir {ENV} && '
-                f'conda create -y -n {ENV} python=3 cudatoolkit numba && '
+                f'conda create -y -n {ENV} "python<3.12" cudatoolkit=11.8 && '
                 f'conda activate {ENV} && ',
-                f'pip install scipy numpy click h5py scikit-image matplotlib mrcfile && ',
-                f'git clone -b scipion https://github.com/azazellochg/fsc3D {ENV}'
+                f'pip install numpy numba scipy click h5py scikit-image matplotlib mrcfile && ',
+                f'git clone https://github.com/azazellochg/fsc3D {ENV}'
             ]
             fsc_commands = [(" ".join(installCmds), 'ThreeDFSC/ThreeDFSC_Start.py')]
             env.addPackage('fsc3D', version=ver,
