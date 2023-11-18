@@ -100,7 +100,7 @@ class Plugin(pwem.Plugin):
                 f'cd ../ && rmdir {ENV} && '
                 f'conda create -y -n {ENV} "python<3.12" cudatoolkit=11.8 && '
                 f'conda activate {ENV} && ',
-                f'pip install numpy numba scipy click h5py scikit-image matplotlib mrcfile && ',
+                'pip install numpy numba scipy click h5py scikit-image matplotlib mrcfile && ',
                 f'git clone https://github.com/azazellochg/fsc3D {ENV}'
             ]
             fsc_commands = [(" ".join(installCmds), 'ThreeDFSC/ThreeDFSC_Start.py')]
