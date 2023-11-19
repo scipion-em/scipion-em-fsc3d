@@ -33,7 +33,8 @@ from pyworkflow.viewer import DESKTOP_TKINTER
 from pwem.viewers import ChimeraView, ObjectView, EmProtocolViewer
 
 from .protocols import Prot3DFSC
-from .constants import *
+from .constants import (VOLUME_SLICES, VOLUME_CHIMERA,
+                        VOL_ORIG, VOL_TH, VOL_THBIN)
 
 
 class ThreedFscViewer(EmProtocolViewer):
