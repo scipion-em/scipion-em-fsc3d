@@ -138,7 +138,7 @@ class Prot3DFSC(ProtAnalysis3D):
                       label='Sphericity threshold',
                       help='Threshold value for 3DFSC volume for calculating '
                            'sphericity. 0.5 is default.')
-        form.addParam('hpFilter', params.FloatParam, default=150,
+        form.addParam('hpFilter', params.FloatParam, default=200,
                       label='High-pass filter (A)',
                       help='High-pass filter for thresholding in Angstrom. '
                            'Prevents small dips in directional FSCs at low '
@@ -146,13 +146,13 @@ class Prot3DFSC(ProtAnalysis3D):
                            'the thresholding step. Decrease if you see a '
                            'huge wedge missing from your thresholded 3DFSC '
                            'volume. 200 Angstroms is default.')
-        form.addParam('numThr', params.IntParam, default=1,
+        form.addParam('numThr', params.IntParam, default=0,
                       label='Number of threshold for sphericity',
                       help='Calculate sphericities at different threshold '
                            'cutoffs to determine sphericity deviation across '
                            'spatial frequencies. This can be useful to '
                            'evaluate possible effects of overfitting or '
-                           'improperly assigned orientations.')
+                           'improperly assigned orientations. 0 is default.')
 
     # --------------------------- INSERT steps functions ----------------------
     

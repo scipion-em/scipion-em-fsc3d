@@ -1,3 +1,4 @@
+3.2.2: update default HighPassFilter and numThresholdsForSphericityCalcs, fix numba version
 3.2.1: maintenance release
 3.2: update installation
 3.1.1: bugfix Chimera cmd filename
