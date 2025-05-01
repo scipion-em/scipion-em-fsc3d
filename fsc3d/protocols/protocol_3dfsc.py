@@ -159,9 +159,9 @@ class Prot3DFSC(ProtAnalysis3D):
     def _insertAllSteps(self):
         # Insert processing steps
         self._initialize()
-        self._insertFunctionStep('convertInputStep')
-        self._insertFunctionStep('run3DFSCStep')
-        self._insertFunctionStep('createOutputStep')
+        self._insertFunctionStep('convertInputStep', needsGPU=False)
+        self._insertFunctionStep('run3DFSCStep', needsGPU=self.usesGpu())
+        self._insertFunctionStep('createOutputStep', needsGPU=False)
 
     # --------------------------- STEPS functions -----------------------------
     
