@@ -27,7 +27,7 @@
 import os
 
 import pwem
-from pyworkflow import Config
+from pyworkflow import Config, SPA
 from pyworkflow.utils import Environ
 
 from .constants import *
@@ -42,6 +42,7 @@ class Plugin(pwem.Plugin):
     _pathVars = [FSC3D_HOME]
     _supportedVersions = [V3_0]
     _url = "https://github.com/scipion-em/scipion-em-fsc3d"
+    _processingField = [SPA]
 
     @classmethod
     def _defineVariables(cls):
