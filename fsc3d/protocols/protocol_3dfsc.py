@@ -42,12 +42,161 @@ class outputs(Enum):
 
 
 class Prot3DFSC(ProtAnalysis3D):
-    """ Protocol to calculate 3D FSC.
+    """
+    Calculates directional resolution anisotropy in three-dimensional
+    cryo-EM reconstructions using 3D Fourier Shell Correlation analysis.
+    The protocol evaluates how resolution varies across different spatial
+    orientations, allowing users to identify anisotropic signal quality
+    and directional reconstruction biases. More info:
+    https://github.com/nysbc/Anisotropy
 
-    3D FSC is software tool for quantifying directional
-    resolution using 3D Fourier shell correlation volumes.
-     
-    Find more information at https://github.com/nysbc/Anisotropy
+    AI Generated:
+
+    3D FSC Protocol (Prot3DFSC) — User Manual
+        Overview
+
+        The 3D FSC protocol evaluates directional resolution in cryo-EM
+        reconstructions through the calculation of three-dimensional Fourier
+        Shell Correlation volumes. Its primary purpose is to determine whether
+        the resolution of a reconstructed map is isotropic or varies depending
+        on spatial orientation. This analysis is biologically important because
+        anisotropic resolution often reflects preferred particle orientations,
+        incomplete angular sampling, specimen flexibility, or limitations in
+        data acquisition and processing.
+
+        In standard global FSC analysis, a single resolution estimate is
+        reported for the entire reconstruction. However, many biological
+        datasets contain directional differences in signal quality that are not
+        captured by a global value alone. The 3D FSC protocol provides a more
+        realistic interpretation of map quality by identifying regions or
+        directions where the reconstruction may be weaker or less reliable.
+
+        Inputs and General Workflow
+
+        The protocol requires a full reconstructed volume together with two
+        corresponding half maps. These half maps are essential because the
+        directional FSC calculation relies on comparing independently refined
+        reconstructions. The full map is used as the reference reconstruction
+        for visualization and interpretation of the directional resolution
+        results.
+
+        Users may either provide the half maps explicitly or rely on half maps
+        already associated with the input reconstruction. This flexibility is
+        useful when working with reconstructions imported from external cryo-EM
+        software packages or when the metadata already preserves half-map
+        relationships internally.
+
+        Optionally, a mask can be applied during the analysis. The mask defines
+        which structural regions contribute to the directional FSC calculation.
+        This is particularly important for large macromolecular assemblies,
+        membrane proteins, or flexible complexes where solvent regions or mobile
+        domains could otherwise dominate the anisotropy measurements.
+
+        Biological Meaning of Directional Resolution
+
+        Directional resolution analysis is especially valuable in cryo-EM
+        studies where preferred orientation is suspected. When particles adopt
+        limited angular distributions on the grid, some viewing directions are
+        oversampled while others remain poorly represented. The resulting maps
+        may therefore contain high resolution information along certain
+        directions but weaker signal in others.
+
+        For biological interpretation, anisotropy can affect the visibility of
+        secondary structure features, ligand densities, membrane boundaries, or
+        flexible domains. Understanding these directional limitations helps
+        users assess the reliability of structural conclusions and avoid
+        overinterpretation of weakly resolved regions.
+
+        The protocol also provides sphericity measurements, which summarize how
+        isotropic the directional FSC distribution is. Values closer to perfect
+        spherical symmetry indicate more uniform resolution in all directions,
+        whereas lower sphericity values suggest significant anisotropy.
+
+        Cone Sampling and Angular Resolution
+
+        Directional FSC calculations are performed by sampling Fourier space
+        within angular cones. The cone angle controls the balance between
+        directional sensitivity and statistical robustness. Smaller cone angles
+        provide finer directional discrimination but may increase noise and
+        instability. Larger cone angles produce smoother and more stable
+        estimates at the cost of reduced directional specificity.
+
+        In biological workflows, moderate cone angles are generally appropriate
+        for routine assessment of anisotropy. Extremely small values are mainly
+        useful for specialized investigations of highly directional datasets.
+
+        FSC Thresholds and Sphericity Analysis
+
+        The protocol allows users to define the FSC cutoff criterion used for
+        directional resolution estimation. The commonly used 0.143 criterion is
+        provided as the standard default because it is widely accepted in cryo-
+        EM resolution validation workflows.
+
+        Sphericity thresholds define which portions of the directional FSC
+        volume contribute to anisotropy calculations. Evaluating multiple
+        thresholds can reveal whether anisotropy changes across spatial
+        frequencies. This may provide insight into overfitting, orientation
+        assignment problems, or frequency-dependent reconstruction artifacts.
+
+        High-pass filtering can additionally stabilize thresholding behavior by
+        suppressing low-frequency fluctuations that may distort anisotropy
+        measurements. This is particularly useful for noisy datasets or maps
+        containing strong low-resolution background variations.
+
+        Masking Strategies
+
+        Mask selection strongly influences the biological relevance of the
+        anisotropy analysis. Broad masks including excessive solvent regions
+        may artificially increase isotropy by diluting structural signal,
+        whereas overly restrictive masks can exaggerate anisotropy by focusing
+        only on compact regions.
+
+        For flexible assemblies, masks centered on the stable structural core
+        often produce the most interpretable directional FSC measurements.
+        Membrane proteins, elongated assemblies, and filamentous complexes may
+        particularly benefit from carefully designed masks.
+
+        Outputs and Interpretation
+
+        After completion, the protocol produces a three-dimensional FSC volume
+        together with visualization plots and directional resolution analyses.
+        These outputs help users identify preferred directions of signal loss,
+        assess reconstruction quality, and communicate anisotropy properties in
+        publications or validation reports.
+
+        The generated FSC volume can be visualized in molecular graphics
+        software to inspect anisotropy geometrically. Thresholded outputs are
+        particularly useful for observing whether the reconstruction retains
+        spherical symmetry or displays elongated or flattened resolution
+        distributions.
+
+        Practical Recommendations
+
+        In routine cryo-EM workflows, users should first examine the global FSC
+        together with the directional FSC plots. Strong anisotropy may indicate
+        preferred particle orientation, inaccurate alignment, insufficient tilt
+        coverage, or specimen flexibility. Applying an appropriate mask often
+        improves the interpretability of the results.
+
+        When analyzing membrane proteins or elongated assemblies, anisotropy is
+        common and should not automatically be interpreted as processing
+        failure. Instead, the directional FSC analysis should be considered as
+        complementary information that contextualizes the biological reliability
+        of the reconstruction.
+
+        For publication-quality validation, users are encouraged to inspect the
+        directional FSC volume visually and compare the measured anisotropy
+        against known characteristics of the specimen and acquisition geometry.
+
+        Final Perspective
+
+        The 3D FSC protocol provides an advanced framework for evaluating
+        directional resolution in cryo-EM reconstructions. Rather than relying
+        solely on a single global resolution estimate, it enables a more
+        realistic understanding of how structural information is distributed
+        throughout Fourier space. Careful interpretation of anisotropy,
+        combined with appropriate masking and threshold selection, is essential
+        for producing biologically meaningful conclusions from cryo-EM maps.
     """
     _label = 'estimate resolution'
     _devStatus = PROD
